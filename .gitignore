@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.angular/
+out-tsc/
+.vscode/*
+!.vscode/extensions.json
+.env
+*.log
+.DS_Store
+Thumbs.db
+build-log.txt

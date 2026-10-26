@@ -1,0 +1,246 @@
+/* ============================================================
+   Trilha · design system "Céu"
+   Azul-noite, azul-céu e branco-gelo; mascote: Bento, o gatinho neon.
+   Espelha design/tokens.json. Tema escuro é o padrão.
+   ============================================================ */
+
+/* Escuro (padrão): azul-noite profundo com acento azul-céu */
+:root,
+[data-tema='escuro'] {
+  --fundo: #0a1020;
+  --fundo-2: #0d1427;
+  --superficie: #121b31;
+  --superficie-2: #18233d;
+  --superficie-3: #22304f;
+  --borda: rgb(170 195 255 / 10%);
+  --borda-forte: rgb(170 195 255 / 20%);
+  --texto: #eef3ff;
+  --texto-2: #b9c4dc;
+  --texto-suave: #8794b0;
+  --acento: #5b8def;
+  --acento-claro: #84aaf5;
+  --acento-escuro: #3a6fd8;
+  --acento-suave: rgb(91 141 239 / 15%);
+  --sobre-acento: #ffffff;
+  --sucesso: #4fc3a1;
+  --sucesso-suave: rgb(79 195 161 / 14%);
+  --erro: #f07a7a;
+  --erro-suave: rgb(240 122 122 / 13%);
+  --sombra: 0 24px 60px rgb(2 6 18 / 55%);
+  --sombra-leve: 0 10px 30px rgb(2 6 18 / 35%);
+  --brilho: radial-gradient(900px 520px at 85% -10%, rgb(91 141 239 / 16%), transparent 60%);
+  color-scheme: dark;
+}
+
+/* Claro: branco-gelo com acento azul-royal */
+[data-tema='claro'] {
+  --fundo: #f3f6fb;
+  --fundo-2: #e9eef7;
+  --superficie: #ffffff;
+  --superficie-2: #f2f5fb;
+  --superficie-3: #e3e9f4;
+  --borda: rgb(14 24 48 / 9%);
+  --borda-forte: rgb(14 24 48 / 18%);
+  --texto: #0e1830;
+  --texto-2: #3b4a66;
+  --texto-suave: #66748f;
+  --acento: #2f63d1;
+  --acento-claro: #3a6fd8;
+  --acento-escuro: #234fae;
+  --acento-suave: rgb(47 99 209 / 10%);
+  --sobre-acento: #ffffff;
+  --sucesso: #1f9a78;
+  --sucesso-suave: rgb(31 154 120 / 11%);
+  --erro: #c9423f;
+  --erro-suave: rgb(201 66 63 / 9%);
+  --sombra: 0 24px 60px rgb(20 40 90 / 12%);
+  --sombra-leve: 0 10px 30px rgb(20 40 90 / 8%);
+  --brilho: radial-gradient(900px 520px at 85% -10%, rgb(91 141 239 / 14%), transparent 60%);
+  color-scheme: light;
+}
+
+:root {
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+
+  --r-1: 6px;
+  --r-2: 10px;
+  --r-3: 16px;
+  --r-assinatura: 4px 28px 4px 4px; /* canto-assinatura da marca */
+  --pilula: 999px;
+
+  --gutter: clamp(16px, 4vw, 40px);
+  --largura-max: 1240px;
+  --sidebar: 248px;
+  --topo-movel: 60px;
+  --nav-movel: 68px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--texto);
+  background: var(--fundo);
+  -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
+}
+
+h1, h2, h3, h4 { margin: 0; font-family: var(--serif); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+h1 { font-size: clamp(1.9rem, 3.4vw, 2.75rem); }
+h2 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+h3 { font-size: 1.1rem; }
+h1 em, h2 em, h3 em { font-style: italic; color: var(--acento); }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+img { max-width: 100%; display: block; }
+::selection { background: var(--acento); color: var(--sobre-acento); }
+
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+
+/* ---------- Tipografia utilitária ---------- */
+.rotulo-mono {
+  font-family: var(--mono);
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.acento { color: var(--acento); }
+.suave { color: var(--texto-suave); }
+.num { font-family: var(--serif); font-variant-numeric: lining-nums tabular-nums; }
+
+/* ---------- Superfícies ---------- */
+.painel {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--r-3);
+  padding: clamp(16px, 2.2vw, 24px);
+}
+.painel.destaque {
+  border-radius: var(--r-assinatura);
+  background: linear-gradient(135deg, rgb(91 141 239 / 10%), rgb(255 255 255 / 0%) 60%), var(--superficie);
+  border-color: var(--borda-forte);
+  box-shadow: var(--sombra-leve);
+}
+.painel-cab {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 16px;
+}
+.painel-cab h2 { font-size: 1.2rem; }
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 42px; padding: 0 18px;
+  border: 1px solid transparent; border-radius: var(--r-2);
+  font-weight: 600; font-size: .9rem; white-space: nowrap;
+  cursor: pointer; text-decoration: none;
+  transition: background .2s, border-color .2s, color .2s, transform .12s;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primario { background: var(--acento); color: var(--sobre-acento); }
+.btn-primario:hover { background: var(--acento-claro); }
+.btn-secundario { background: var(--superficie-2); border-color: var(--borda-forte); }
+.btn-secundario:hover { border-color: var(--acento); }
+.btn-fantasma { background: transparent; color: var(--texto-2); }
+.btn-fantasma:hover { background: var(--superficie-2); color: var(--texto); }
+.btn-perigo { background: transparent; border-color: color-mix(in srgb, var(--erro) 45%, transparent); color: var(--erro); }
+.btn-perigo:hover { background: var(--erro-suave); }
+.btn-sm { min-height: 34px; padding: 0 12px; font-size: .82rem; }
+.btn-lg { min-height: 50px; padding: 0 24px; font-size: .95rem; }
+.btn-bloco { width: 100%; }
+.btn-icone {
+  display: inline-grid; place-items: center; flex: none;
+  width: 38px; height: 38px; border-radius: var(--r-2);
+  border: 1px solid var(--borda); background: transparent; color: var(--texto-2);
+  cursor: pointer; transition: background .2s, color .2s, border-color .2s;
+}
+.btn-icone:hover { background: var(--superficie-2); color: var(--texto); border-color: var(--borda-forte); }
+
+.link-texto {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 0 4px; border: 0; border-bottom: 1px solid var(--acento); background: none;
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--texto); cursor: pointer;
+}
+.link-texto:hover { color: var(--acento); }
+
+/* ---------- Formulários ---------- */
+.campo-grupo { display: grid; gap: 6px; }
+.campo-grupo > span:first-child, .campo-grupo > label:first-child { font-size: .82rem; font-weight: 600; color: var(--texto-2); }
+.campo {
+  width: 100%; min-height: 44px; padding: 10px 14px;
+  border: 1px solid var(--borda-forte); border-radius: var(--r-2);
+  background: var(--fundo-2); color: var(--texto);
+  transition: border-color .2s, box-shadow .2s;
+}
+.campo::placeholder { color: var(--texto-suave); opacity: .8; }
+.campo:focus { outline: none; border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-suave); }
+textarea.campo { resize: vertical; min-height: 96px; line-height: 1.5; }
+select.campo { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--texto-suave) 50%), linear-gradient(135deg, var(--texto-suave) 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 36px; }
+.campo-erro { font-size: .78rem; color: var(--erro); }
+.campo-dica { font-size: .75rem; color: var(--texto-suave); }
+
+.busca {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 42px; padding: 0 14px;
+  border: 1px solid var(--borda); border-radius: var(--r-2); background: var(--superficie);
+  color: var(--texto-suave);
+}
+.busca:focus-within { border-color: var(--acento); }
+.busca input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--texto); }
+
+/* ---------- Chips e segmentos ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 32px; padding: 0 12px;
+  border: 1px solid var(--borda); border-radius: var(--pilula);
+  background: transparent; color: var(--texto-2);
+  font-size: .8rem; font-weight: 500; white-space: nowrap; cursor: pointer;
+  transition: all .2s;
+}
+.chip:hover { border-color: var(--borda-forte); color: var(--texto); }
+.chip.ativo { background: var(--acento-suave); border-color: color-mix(in srgb, var(--acento) 55%, transparent); color: var(--acento); }
+.etiqueta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px; border-radius: var(--r-1);
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase;
+  background: var(--superficie-2); color: var(--texto-2); border: 1px solid var(--borda);
+}
+.etiqueta.acento { background: var(--acento-suave); color: var(--acento); border-color: transparent; }
+.etiqueta.sucesso { background: var(--sucesso-suave); color: var(--sucesso); border-color: transparent; }
+
+.segmentos { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--borda); border-radius: var(--r-2); background: var(--fundo-2); }
+.segmentos button { border: 0; background: transparent; padding: 6px 12px; border-radius: 7px; font-size: .82rem; font-weight: 600; color: var(--texto-suave); cursor: pointer; }
+.segmentos button.ativo { background: var(--superficie-3); color: var(--texto); }
+
+/* ---------- Progresso ---------- */
+.barra { height: 6px; border-radius: var(--pilula); background: var(--superficie-3); overflow: hidden; }
+.barra > span { display: block; height: 100%; border-radius: inherit; background: var(--acento); transition: width .6s var(--ease); }
+
+/* ---------- Layout ---------- */
+.grade-auto { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+.pilha { display: grid; gap: 16px; }
+.vazio { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 40px 20px; color: var(--texto-suave); }
+.vazio h3 { color: var(--texto); }
+
+.esqueleto { background: linear-gradient(90deg, var(--superficie-2) 25%, var(--superficie-3) 50%, var(--superficie-2) 75%); background-size: 200% 100%; animation: brilha 1.4s infinite; border-radius: var(--r-2); }
+@keyframes brilha { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}

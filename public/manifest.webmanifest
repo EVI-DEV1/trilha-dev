@@ -1,0 +1,58 @@
+{
+  "name": "Trilha — planner de estudos para devs",
+  "short_name": "Trilha",
+  "description": "Organize trilhas de estudo, acompanhe seu progresso e estude com foco.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A1020",
+  "theme_color": "#0A1020",
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icons/icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Modo foco",
+      "url": "/foco",
+      "icons": [
+        {
+          "src": "icons/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Nova trilha",
+      "url": "/trilhas?nova=1",
+      "icons": [
+        {
+          "src": "icons/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "trilhas": [
+    {
+      "id": 1,
+      "titulo": "Lógica de Programação",
+      "plataforma": "DIO",
+      "categoria": "fundamentos",
+      "cor": "#8C7CFF",
+      "modulos": [
+        {
+          "id": 1,
+          "titulo": "Algoritmos e pseudocódigo",
+          "concluido": true
+        },
+        {
+          "id": 2,
+          "titulo": "Estruturas condicionais e de repetição",
+          "concluido": true
+        },
+        {
+          "id": 3,
+          "titulo": "Vetores e funções",
+          "concluido": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "titulo": "JavaScript Developer",
+      "plataforma": "DIO",
+      "categoria": "front-end",
+      "cor": "#F2B930",
+      "modulos": [
+        {
+          "id": 1,
+          "titulo": "Fundamentos de JavaScript",
+          "concluido": true
+        },
+        {
+          "id": 2,
+          "titulo": "DOM e eventos",
+          "concluido": true
+        },
+        {
+          "id": 3,
+          "titulo": "Assincronismo e Fetch API",
+          "concluido": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "titulo": "React Developer",
+      "plataforma": "DIO",
+      "categoria": "front-end",
+      "cor": "#4F9DFF",
+      "modulos": [
+        {
+          "id": 1,
+          "titulo": "Componentes e props",
+          "concluido": true
+        },
+        {
+          "id": 2,
+          "titulo": "Hooks e estado",
+          "concluido": true
+        },
+        {
+          "id": 3,
+          "titulo": "Consumo de APIs",
+          "concluido": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "titulo": "GitHub Certification",
+      "plataforma": "DIO",
+      "categoria": "ferramentas",
+      "cor": "#3FBFA6",
+      "modulos": [
+        {
+          "id": 1,
+          "titulo": "Git e versionamento",
+          "concluido": true
+        },
+        {
+          "id": 2,
+          "titulo": "GitHub Actions",
+          "concluido": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "titulo": "UI/UX Designer",
+      "plataforma": "DIO",
+      "categoria": "design",
+      "cor": "#FF6F91",
+      "modulos": [
+        {
+          "id": 1,
+          "titulo": "Fundamentos de UX",
+          "concluido": true
+        },
+        {
+          "id": 2,
+          "titulo": "Prototipação no Figma",
+          "concluido": true
+        },
+        {
+          "id": 3,
+          "titulo": "Design system",
+          "concluido": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "titulo": "Angular na prática (este projeto)",
+      "plataforma": "Projeto próprio",
+      "categoria": "front-end",
+      "cor": "#FF9A5C",
+      "modulos": [
+        {
+          "id": 1,
+          "titulo": "Componentes standalone e templates",
+          "concluido": false
+        },
+        {
+          "id": 2,
+          "titulo": "Signals e estado",
+          "concluido": false
+        },
+        {
+          "id": 3,
+          "titulo": "Rotas e lazy loading",
+          "concluido": false
+        },
+        {
+          "id": 4,
+          "titulo": "HttpClient, interceptors e APIs",
+          "concluido": false
+        },
+        {
+          "id": 5,
+          "titulo": "Formulários reativos",
+          "concluido": false
+        },
+        {
+          "id": 6,
+          "titulo": "Deploy na Vercel",
+          "concluido": false
+        }
+      ]
+    }
+  ]
+}
