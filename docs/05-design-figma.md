@@ -15,6 +15,8 @@ Layout: no desktop, **barra lateral** de 248px à esquerda; no celular, **topo**
 ## Estrutura do arquivo
 Crie um arquivo "Trilha · Céu" com estas páginas:
 
+> **Atalho:** arraste o arquivo `trilha-ceu-figma.svg` (prancha do design system) para dentro do Figma. Ele traz fundamentos, Bento nas 5 poses e componentes já como camadas nomeadas (`Cor/acento`, `Botao/primario/md`…). Para as telas, o plugin **html.to.design** importa as páginas de https://trilha-dev-one.vercel.app.
+
 1. **🎨 Fundamentos**: cores (dois modos), tipografia, raios, sombras, canto-assinatura, paleta das trilhas.
 2. **🐱 Bento**: o mascote nas 5 poses (`acenando`, `lendo`, `foco`, `comemorando`, `pensando`) e o logotipo (`app-marca`).
 3. **🧩 Componentes**: Botão (primário, secundário, fantasma, perigo, ícone; tamanhos sm/padrão/lg), Campo (padrão, com erro, com dica), Chip, Etiqueta, Segmentos, Busca, Painel (normal e destaque), Anel de progresso, Avatar de trilha, Folha (painel que sobe de baixo), Foco flutuante (mini-timer), Navegação (lateral e inferior).

@@ -3,7 +3,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { progressoDe, proximoModulo, rotuloCategoria } from '../../core/models/trilha.model';
 import { AuthService } from '../../core/services/auth.service';
-import { AvisoService } from '../../core/services/aviso.service';
 import { FeriadosService } from '../../core/services/feriados.service';
 import { FocoService } from '../../core/services/foco.service';
 import { TrilhasService } from '../../core/services/trilhas.service';
@@ -13,10 +12,12 @@ import { CabecalhoComponent } from '../../shared/cabecalho.component';
 import { IconeComponent } from '../../shared/icone.component';
 import { MascoteComponent } from '../../shared/mascote.component';
 import { formatarMinutos } from '../../shared/formatos';
+import { FolhaComponent } from '../../shared/folha.component';
+import { SugestoesCursoComponent } from '../../shared/sugestoes-curso.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, CabecalhoComponent, AnelProgressoComponent, AvatarTrilhaComponent, IconeComponent, MascoteComponent],
+  imports: [RouterLink, CabecalhoComponent, AnelProgressoComponent, AvatarTrilhaComponent, IconeComponent, MascoteComponent, FolhaComponent, SugestoesCursoComponent],
   template: `
     <app-cabecalho numero="01" rotulo="Painel">
       <h1>{{ saudacao() }}, <em>{{ primeiroNome() }}</em>.</h1>
@@ -43,12 +44,10 @@ import { formatarMinutos } from '../../shared/formatos';
         <app-mascote class="bento-vazio" pose="lendo" [tamanho]="150" />
         <p class="rotulo-mono acento">Primeiros passos</p>
         <h2>Comece pela sua <em>primeira trilha</em>.</h2>
-        <p class="suave">Uma trilha é um curso, formação ou matéria, dividida em módulos. Crie a sua ou carregue exemplos para explorar.</p>
+        <p class="suave">Uma trilha é um curso, formação ou matéria, dividida em módulos. Diga qual curso você faz e escolha as matérias sugeridas, ou crie a sua do zero.</p>
         <div class="acoes-vazio">
-          <a class="btn btn-primario btn-lg" routerLink="/trilhas" [queryParams]="{ nova: 1 }">Criar trilha</a>
-          <button class="btn btn-secundario btn-lg" type="button" (click)="importar()" [disabled]="importando()">
-            {{ importando() ? 'Adicionando…' : 'Usar trilhas de exemplo' }}
-          </button>
+          <button class="btn btn-primario btn-lg" type="button" (click)="sugestoesAbertas.set(true)">Escolher meu curso</button>
+          <a class="btn btn-secundario btn-lg" routerLink="/trilhas" [queryParams]="{ nova: 1 }">Criar do zero</a>
         </div>
       </section>
     } @else {
@@ -206,6 +205,12 @@ import { formatarMinutos } from '../../shared/formatos';
         </div>
       </div>
     }
+
+    @if (sugestoesAbertas()) {
+      <app-folha titulo="Sugestões do seu curso" rotulo="Começar" (fechar)="sugestoesAbertas.set(false)">
+        <app-sugestoes-curso (adicionadas)="sugestoesAbertas.set(false)" />
+      </app-folha>
+    }
   `,
   styles: `
     .kpis { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -286,10 +291,9 @@ export class DashboardComponent {
   private feriados = inject(FeriadosService);
   protected foco = inject(FocoService);
   protected auth = inject(AuthService);
-  private aviso = inject(AvisoService);
   private router = inject(Router);
 
-  protected importando = signal(false);
+  protected sugestoesAbertas = signal(false);
   protected progresso = progressoDe;
   protected categoria = rotuloCategoria;
   protected formatar = formatarMinutos;
@@ -363,16 +367,5 @@ export class DashboardComponent {
   focar(trilhaId: number, trilha: string, moduloId: number, modulo: string): void {
     this.foco.focarEm({ trilhaId, trilha, moduloId, modulo });
     this.router.navigate(['/foco']);
-  }
-
-  importar(): void {
-    this.importando.set(true);
-    this.servico.importarExemplos().subscribe({
-      next: (lista) => {
-        this.importando.set(false);
-        this.aviso.mostrar(`${lista.length} trilhas de exemplo adicionadas.`);
-      },
-      error: () => this.importando.set(false),
-    });
   }
 }

@@ -21,7 +21,7 @@ O código das páginas é o mesmo nos dois modos: elas falam com o `TrilhasServi
    ```
 5. Para testar mais rápido: **Authentication → Sign In / Providers → Email** e desligue **Confirm email**. Assim a conta já entra direto, sem precisar confirmar por e-mail. (Religue antes de divulgar o app.)
 6. Em **Authentication → URL Configuration**, coloque em *Site URL* o endereço do app (`http://localhost:4200` agora; depois o da Vercel).
-7. Rode o app, crie sua conta na tela **Entrar** e, no Início, toque em **Usar exemplos** para preencher com suas trilhas.
+7. Rode o app, crie sua conta na tela **Entrar** e, no Início, toque em **Escolher meu curso** e marque as matérias sugeridas.
 
 ## Segurança
 - A chave **anon/publishable** foi feita para ficar no front-end. Quem protege os dados é o **RLS** do `schema.sql`: cada linha tem `user_id` e as políticas só liberam as linhas do usuário logado.
@@ -38,5 +38,5 @@ O código das páginas é o mesmo nos dois modos: elas falam com o `TrilhasServi
 |---|---|
 | "Tabela trilhas não encontrada" | Rode o `schema.sql` no SQL Editor |
 | "Confirme seu e-mail…" | Clique no link do e-mail ou desligue *Confirm email* (passo 5) |
-| Lista vazia depois de entrar | Normal numa conta nova: use **Usar exemplos** |
+| Lista vazia depois de entrar | Normal numa conta nova: use **Escolher meu curso** |
 | `Invalid API key` | Confira se copiou a chave **anon/publishable**, sem espaços |

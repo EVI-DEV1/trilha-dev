@@ -3,7 +3,6 @@ import { Observable, concat, finalize, tap, toArray } from 'rxjs';
 import { Modulo, NovaTrilha, Trilha, progressoDe } from '../models/trilha.model';
 import { ComemoracaoService } from './comemoracao.service';
 import { REPOSITORIO_TRILHAS } from '../data/repositorio-trilhas';
-import { TRILHAS_EXEMPLO } from '../data/trilhas-exemplo';
 
 /**
  * Estado das trilhas com signals. Os dados vêm do repositório
@@ -97,9 +96,9 @@ export class TrilhasService {
     return this.repo.remover(id).pipe(tap(() => this._trilhas.update((l) => l.filter((t) => t.id !== id))));
   }
 
-  /** Cria as trilhas de exemplo, uma depois da outra (mantém a ordem). */
-  importarExemplos(): Observable<Trilha[]> {
-    return concat(...TRILHAS_EXEMPLO.map((t) => this.criar(t))).pipe(toArray());
+  /** Cria várias trilhas, uma depois da outra (mantém a ordem). Usado pelas sugestões do curso. */
+  adicionarVarias(lista: NovaTrilha[]): Observable<Trilha[]> {
+    return concat(...lista.map((t) => this.criar(t))).pipe(toArray());
   }
 
   /**

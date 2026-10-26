@@ -39,6 +39,7 @@ Para login e dados na nuvem, siga [docs/09-supabase.md](docs/09-supabase.md).
 - **Boas-vindas**: três telas ilustradas no primeiro acesso.
 - **Conta** (modo nuvem): criar conta, entrar e sair; cada pessoa vê só as próprias trilhas.
 - **Início**: anel de progresso geral, semana de estudos com sequência de dias 🔥, avatares das trilhas **meta semanal** de foco e **plano de hoje** (conclua o próximo módulo direto daqui). Concluir uma trilha dispara uma comemoração com confete 🎉.
+- **Sugestões por curso**: a pessoa diz o que estuda (Engenharia de Software, ADS, Ciência da Computação, Front-end, Dados, UX/UI…) e recebe matérias e temas prontos, com módulos, para virar trilhas. O curso fica salvo na conta.
 - **Trilhas**: busca, filtro por categoria e criação de trilha num painel que sobe da parte de baixo, com escolha de cor.
 - **Detalhe**: marcar, adicionar e remover módulos, **anotações por módulo**, **estudar um módulo com o timer** e ver os minutos de foco da trilha; excluir trilha (com confirmação).
 - **Foco**: Pomodoro de 5, 25 ou 50 min que **continua rodando ao trocar de página**, com histórico de 7 dias salvo no navegador e notificação ao fim de cada fase.

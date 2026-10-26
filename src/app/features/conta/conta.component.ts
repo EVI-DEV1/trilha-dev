@@ -8,10 +8,13 @@ import { TemaService } from '../../core/services/tema.service';
 import { TrilhasService } from '../../core/services/trilhas.service';
 import { CabecalhoComponent } from '../../shared/cabecalho.component';
 import { IconeComponent } from '../../shared/icone.component';
+import { FolhaComponent } from '../../shared/folha.component';
+import { SugestoesCursoComponent } from '../../shared/sugestoes-curso.component';
+import { CursoService } from '../../core/services/curso.service';
 
 @Component({
   selector: 'app-conta',
-  imports: [FormsModule, RouterLink, CabecalhoComponent, IconeComponent],
+  imports: [FormsModule, RouterLink, CabecalhoComponent, IconeComponent, FolhaComponent, SugestoesCursoComponent],
   template: `
     <app-cabecalho numero="05" rotulo="Conta">
       <h1>Sua <em>conta</em></h1>
@@ -107,10 +110,10 @@ import { IconeComponent } from '../../shared/icone.component';
         </div>
         <div class="preferencia">
           <div>
-            <strong>Trilhas de exemplo</strong>
-            <p class="suave">Adiciona seis trilhas prontas para explorar o app.</p>
+            <strong>Seu curso</strong>
+            <p class="suave">{{ curso.curso()?.nome ?? 'Nenhum escolhido. Escolha para receber sugestões de matérias e temas.' }}</p>
           </div>
-          <button class="btn btn-secundario" type="button" (click)="importar()" [disabled]="importando()">{{ importando() ? 'Adicionando…' : 'Adicionar' }}</button>
+          <button class="btn btn-secundario" type="button" (click)="sugestoesAbertas.set(true)">{{ curso.curso() ? 'Ver sugestões' : 'Escolher' }}</button>
         </div>
       </section>
 
@@ -126,6 +129,12 @@ import { IconeComponent } from '../../shared/icone.component';
         </section>
       }
     </div>
+
+    @if (sugestoesAbertas()) {
+      <app-folha titulo="Sugestões do seu curso" rotulo="Matérias e temas" (fechar)="sugestoesAbertas.set(false)">
+        <app-sugestoes-curso (adicionadas)="sugestoesAbertas.set(false)" />
+      </app-folha>
+    }
   `,
   styles: `
     .secoes { display: grid; gap: 16px; max-width: 860px; }
@@ -151,7 +160,8 @@ export class ContaComponent {
   protected opcoesMeta = OPCOES_META_HORAS;
   protected nome = this.auth.nome();
   protected salvandoNome = signal(false);
-  protected importando = signal(false);
+  protected sugestoesAbertas = signal(false);
+  protected curso = inject(CursoService);
 
   async salvarNome(): Promise<void> {
     this.salvandoNome.set(true);
@@ -178,17 +188,6 @@ export class ContaComponent {
     a.download = `trilha-dados-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  }
-
-  importar(): void {
-    this.importando.set(true);
-    this.trilhas.importarExemplos().subscribe({
-      next: (lista) => {
-        this.importando.set(false);
-        this.aviso.mostrar(`${lista.length} trilhas de exemplo adicionadas.`);
-      },
-      error: () => this.importando.set(false),
-    });
   }
 
   async sair(): Promise<void> {
