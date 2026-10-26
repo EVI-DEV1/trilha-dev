@@ -11,13 +11,13 @@ Planner de estudos para devs, feito em **Angular 19**: organize trilhas e módul
 | Camada | Tecnologia |
 |---|---|
 | Front-end | Angular 19 (standalone, signals, controle de fluxo `@if/@for`, lazy loading) |
-| Estilo | Design system "Tinta" (SCSS + CSS custom properties dos tokens do Figma), visual de app mobile |
+| Estilo | Design system "Céu" (SCSS + CSS custom properties dos tokens do Figma), temas escuro e claro, mascote Bento |
 | Dados | Supabase (Postgres + Auth + RLS) **ou** json-server no modo local, via padrão Repository |
 | APIs | API REST pública do GitHub |
 | PWA | `@angular/service-worker`, manifest e ícones: instalável e com cache offline |
 | CI | GitHub Actions: build a cada push e pull request |
 | Design | Figma (Variables + Tokens Studio) → `design/tokens.json` |
-| IA | Skills do Claude em `skills-claude/` (mover para `.claude/skills/` — ver docs/06) + `CLAUDE.md` |
+| IA | Skills do Claude em `.claude/skills/` + `CLAUDE.md` |
 | Deploy | Vercel (front) + My JSON Server (API de demonstração) |
 
 ## Como rodar

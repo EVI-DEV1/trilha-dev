@@ -13,11 +13,11 @@ Ritmo sugerido: ~1h por dia, 5 dias por semana. Cada semana termina com um commi
 ## Semana 2 — Templates e signals
 - [ ] `@if`, `@for` (por que o `track` importa), `@empty`.
 - [ ] `signal`, `computed`, `input()` — ler `TrilhasService`, `FocoService` e `AnelProgressoComponent`.
-- [ ] Exercício: no painel, adicionar um card "Módulos pendentes" (`totalModulos - modulosConcluidos`).
+- [x] Exercício: no painel, mostrar os módulos pendentes (`totalModulos - modulosConcluidos`). ✅ Feito no card "Módulos concluídos"; leia o `computed` `modulosPendentes` em `dashboard.component.ts`.
 - [ ] Exercício: fazer o anel do avatar ficar verde quando a trilha chegar a 100%.
 
 ## Semana 3 — Design no Figma
-- [ ] Montar o arquivo do Figma seguindo `docs/05-design-figma.md`.
+- [ ] Montar o arquivo do Figma seguindo `docs/05-design-figma.md` (design system Céu, com o Bento).
 - [ ] Importar `design/tokens.json` (Variables ou Tokens Studio).
 - [ ] Desenhar Painel e Detalhe em desktop e mobile; criar o protótipo.
 - [ ] Exercício: mudar a cor primária no Figma → atualizar `tokens.json` → atualizar `styles.scss`. Ver o app mudar.
@@ -32,7 +32,8 @@ Ritmo sugerido: ~1h por dia, 5 dias por semana. Cada semana termina com um commi
 - [ ] `HttpClient`, Observables, `subscribe`, `forkJoin`, `finalize`.
 - [ ] Interceptors: ler `erro-http.interceptor.ts`; desligar a API e ver a mensagem.
 - [ ] Testar a API com curl/Thunder Client (`docs/04-apis.md`).
-- [ ] Exercício: integrar a BrasilAPI de feriados e mostrar o próximo feriado no painel — use a skill `integrar-api`.
+- [x] Exercício: integrar a BrasilAPI de feriados e mostrar o próximo feriado no painel. ✅ Feito: leia `feriados.service.ts` e o token `SILENCIOSO` no interceptor (`docs/04-apis.md`, seção 4.3).
+- [ ] Exercício novo: integrar a API do Dev.to (`/api/articles?tag=angular`) e sugerir leituras no detalhe da trilha — use a skill `integrar-api`.
 
 ## Semana 6 — Qualidade e deploy
 - [ ] Rodar `npm run build` e conferir o tamanho do bundle.

@@ -46,11 +46,12 @@ import { IconeComponent } from '../../shared/icone.component';
         <div class="preferencia">
           <div>
             <strong>Tema</strong>
-            <p class="suave">Escuro é o padrão. O claro é melhor em ambientes iluminados.</p>
+            <p class="suave">Por padrão, acompanha o tema do seu sistema. Você pode fixar um deles.</p>
           </div>
           <div class="segmentos" role="radiogroup" aria-label="Tema">
-            <button type="button" role="radio" [class.ativo]="tema.tema() === 'escuro'" [attr.aria-checked]="tema.tema() === 'escuro'" (click)="tema.definir('escuro')"><app-icone nome="lua" [tamanho]="15" /> Escuro</button>
-            <button type="button" role="radio" [class.ativo]="tema.tema() === 'claro'" [attr.aria-checked]="tema.tema() === 'claro'" (click)="tema.definir('claro')"><app-icone nome="sol" [tamanho]="15" /> Claro</button>
+            <button type="button" role="radio" [class.ativo]="tema.preferencia() === 'sistema'" [attr.aria-checked]="tema.preferencia() === 'sistema'" (click)="tema.definir('sistema')"><app-icone nome="painel" [tamanho]="15" /> Sistema</button>
+            <button type="button" role="radio" [class.ativo]="tema.preferencia() === 'escuro'" [attr.aria-checked]="tema.preferencia() === 'escuro'" (click)="tema.definir('escuro')"><app-icone nome="lua" [tamanho]="15" /> Escuro</button>
+            <button type="button" role="radio" [class.ativo]="tema.preferencia() === 'claro'" [attr.aria-checked]="tema.preferencia() === 'claro'" (click)="tema.definir('claro')"><app-icone nome="sol" [tamanho]="15" /> Claro</button>
           </div>
         </div>
         <div class="preferencia">

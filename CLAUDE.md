@@ -17,7 +17,7 @@ Projeto **Trilha Dev**: app Angular 19 de planejamento de estudos. Autora: Elian
 - `src/app/core/` modelos, serviços, interceptors
 - `src/app/shared/` componentes reutilizáveis
 - `src/app/features/<pagina>/` páginas
-- `docs/` documentação · `design/` tokens do Figma · `skills-claude/` (mover para `.claude/skills/` — ver docs/06) skills
+- `docs/` documentação · `design/` tokens do Figma · `.claude/skills/` skills do projeto (carregadas sozinhas pelo Claude Code)
 
 ## Comandos
 - `npm run dev` API + front · `npm run build` build de produção

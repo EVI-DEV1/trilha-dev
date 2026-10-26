@@ -1,8 +1,10 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { progressoDe, proximoModulo, rotuloCategoria } from '../../core/models/trilha.model';
 import { AuthService } from '../../core/services/auth.service';
 import { AvisoService } from '../../core/services/aviso.service';
+import { FeriadosService } from '../../core/services/feriados.service';
 import { FocoService } from '../../core/services/foco.service';
 import { TrilhasService } from '../../core/services/trilhas.service';
 import { AnelProgressoComponent } from '../../shared/anel-progresso.component';
@@ -62,6 +64,9 @@ import { formatarMinutos } from '../../shared/formatos';
           <div>
             <p class="rotulo-mono">Módulos concluídos</p>
             <strong class="num valor">{{ servico.modulosConcluidos() }}<small>/{{ servico.totalModulos() }}</small></strong>
+            <small class="suave">
+              @if (modulosPendentes()) { {{ modulosPendentes() }} {{ modulosPendentes() === 1 ? 'pendente' : 'pendentes' }} } @else { Tudo concluído 🎉 }
+            </small>
           </div>
         </article>
         <article class="painel kpi">
@@ -172,6 +177,20 @@ import { formatarMinutos } from '../../shared/formatos';
             </div>
           </section>
 
+          @if (feriado(); as f) {
+            <section class="painel feriado" aria-label="Próximo feriado nacional">
+              <div class="feriado-data">
+                <span class="num">{{ f.data.getDate() }}</span>
+                <span class="rotulo-mono">{{ mes(f.data) }}</span>
+              </div>
+              <div class="feriado-info">
+                <p class="rotulo-mono">Próximo feriado</p>
+                <strong>{{ f.nome }}</strong>
+                <small class="suave">{{ quando(f.diasFaltando) }} · bom dia para adiantar uma trilha</small>
+              </div>
+            </section>
+          }
+
           <section class="painel">
             <div class="painel-cab"><h2>Por categoria</h2></div>
             <ul class="categorias">
@@ -233,6 +252,14 @@ import { formatarMinutos } from '../../shared/formatos';
     .hoje .dia { color: var(--acento); }
     .meta-linha { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--borda); font-size: .85rem; }
 
+    .feriado { display: flex; align-items: center; gap: 16px; }
+    .feriado-data { display: grid; place-items: center; flex: none; width: 60px; height: 64px; border-radius: var(--r-2); background: var(--acento-suave); color: var(--acento); }
+    .feriado-data .num { font-size: 1.6rem; line-height: 1; }
+    .feriado-data .rotulo-mono { color: var(--acento); font-size: .62rem; }
+    .feriado-info { display: grid; gap: 2px; min-width: 0; }
+    .feriado-info strong { font-weight: 600; }
+    .feriado-info small { font-size: .8rem; }
+
     .categorias li { display: grid; grid-template-columns: 110px 1fr auto; align-items: center; gap: 12px; padding: 8px 0; font-size: .88rem; }
 
     .vazio-inicial { display: grid; gap: 14px; padding: clamp(28px, 5vw, 56px); max-width: 760px; }
@@ -256,6 +283,7 @@ import { formatarMinutos } from '../../shared/formatos';
 })
 export class DashboardComponent {
   protected servico = inject(TrilhasService);
+  private feriados = inject(FeriadosService);
   protected foco = inject(FocoService);
   protected auth = inject(AuthService);
   private aviso = inject(AvisoService);
@@ -265,6 +293,9 @@ export class DashboardComponent {
   protected progresso = progressoDe;
   protected categoria = rotuloCategoria;
   protected formatar = formatarMinutos;
+
+  protected modulosPendentes = computed(() => this.servico.totalModulos() - this.servico.modulosConcluidos());
+  protected feriado = toSignal(this.feriados.proximo(), { initialValue: null });
 
   protected primeiroNome = computed(() => this.auth.nome().split(' ')[0]);
   protected saudacao = computed(() => {
@@ -319,6 +350,14 @@ export class DashboardComponent {
 
   protected altura(minutos: number): number {
     return Math.round((minutos / this.maximo()) * 100);
+  }
+
+  protected mes(data: Date): string {
+    return data.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+  }
+
+  protected quando(dias: number): string {
+    return dias === 0 ? 'É hoje' : dias === 1 ? 'Amanhã' : `Em ${dias} dias`;
   }
 
   focar(trilhaId: number, trilha: string, moduloId: number, modulo: string): void {

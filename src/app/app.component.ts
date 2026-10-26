@@ -8,6 +8,7 @@ import { TrilhasService } from './core/services/trilhas.service';
 import { AvisoService } from './core/services/aviso.service';
 import { FocoService } from './core/services/foco.service';
 import { ComemoracaoService } from './core/services/comemoracao.service';
+import { TemaService } from './core/services/tema.service';
 import { ConfeteComponent } from './shared/confete.component';
 import { IconeComponent, NomeIcone } from './shared/icone.component';
 import { MarcaComponent } from './shared/marca.component';
@@ -216,6 +217,8 @@ export class AppComponent {
   protected aviso = inject(AvisoService);
   protected foco = inject(FocoService);
   protected comemoracao = inject(ComemoracaoService);
+  // Criado já na abertura para acompanhar a troca de tema do sistema em qualquer página.
+  private tema = inject(TemaService);
 
   protected menu: ItemMenu[] = [
     { rota: '/', rotulo: 'Painel', icone: 'painel' },

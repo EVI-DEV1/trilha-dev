@@ -24,6 +24,11 @@
       "name": "github",
       "urls": ["https://api.github.com/**"],
       "cacheConfig": { "strategy": "freshness", "maxSize": 30, "maxAge": "1d", "timeout": "5s" }
+    },
+    {
+      "name": "feriados",
+      "urls": ["https://brasilapi.com.br/api/feriados/**"],
+      "cacheConfig": { "strategy": "performance", "maxSize": 3, "maxAge": "7d" }
     }
   ]
 }
