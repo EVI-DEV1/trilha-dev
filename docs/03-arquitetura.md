@@ -16,7 +16,7 @@ src/app/
 ├── app.config.ts           providers: router, HttpClient + interceptor
 ├── app.routes.ts           rotas lazy (loadComponent)
 ├── core/
-│   ├── data/               repositório (json-server | Supabase), cliente Supabase, trilhas de exemplo
+│   ├── data/               repositório (json-server | Supabase), cliente Supabase, catálogo de cursos e sugestões (cursos.ts)
 │   ├── guards/             authGuard, visitanteGuard
 │   ├── models/             interfaces (Trilha, Modulo, GithubUsuario…)
 │   ├── services/           TrilhasService, AuthService, FocoService, GithubService, AvisoService

@@ -10,18 +10,23 @@ import { FolhaComponent } from '../../shared/folha.component';
 import { IconeComponent } from '../../shared/icone.component';
 import { TrilhaFormComponent } from '../../shared/trilha-form.component';
 import { MascoteComponent } from '../../shared/mascote.component';
+import { SugestoesCursoComponent } from '../../shared/sugestoes-curso.component';
+import { CursoService } from '../../core/services/curso.service';
 
 type Situacao = 'todas' | 'andamento' | 'concluidas';
 type Ordem = 'recentes' | 'progresso' | 'nome';
 
 @Component({
   selector: 'app-trilhas',
-  imports: [FormsModule, RouterLink, CabecalhoComponent, AvatarTrilhaComponent, IconeComponent, FolhaComponent, TrilhaFormComponent, MascoteComponent],
+  imports: [FormsModule, RouterLink, CabecalhoComponent, AvatarTrilhaComponent, IconeComponent, FolhaComponent, TrilhaFormComponent, MascoteComponent, SugestoesCursoComponent],
   template: `
     <app-cabecalho numero="02" rotulo="Trilhas">
       <h1>Suas <em>trilhas</em></h1>
       <p>Cada trilha é um curso, formação ou matéria. Abra uma para marcar módulos, anotar e estudar com foco.</p>
       <div acoes>
+        <button class="btn btn-secundario" type="button" (click)="sugestoesAbertas.set(true)">
+          <app-icone nome="livro" [tamanho]="17" /> {{ curso.curso() ? 'Sugestões: ' + curso.curso()!.curto : 'Sugestões do curso' }}
+        </button>
         <button class="btn btn-primario" type="button" (click)="folhaAberta.set(true)"><app-icone nome="mais" [tamanho]="17" /> Nova trilha</button>
       </div>
     </app-cabecalho>
@@ -89,8 +94,11 @@ type Ordem = 'recentes' | 'progresso' | 'nome';
               <button class="btn btn-secundario" type="button" (click)="limparFiltros()">Limpar filtros</button>
             } @else {
               <h3>Você ainda não tem trilhas</h3>
-              <p>Crie a primeira para começar a acompanhar seu progresso.</p>
-              <button class="btn btn-primario" type="button" (click)="folhaAberta.set(true)">Criar trilha</button>
+              <p>Escolha seu curso para receber sugestões de matérias, ou crie a primeira do zero.</p>
+              <div class="acoes-vazio">
+                <button class="btn btn-primario" type="button" (click)="sugestoesAbertas.set(true)">Escolher meu curso</button>
+                <button class="btn btn-secundario" type="button" (click)="folhaAberta.set(true)">Criar do zero</button>
+              </div>
             }
           </div>
         }
@@ -102,6 +110,12 @@ type Ordem = 'recentes' | 'progresso' | 'nome';
         <app-trilha-form [salvando]="salvando()" (salvar)="criar($event)" />
       </app-folha>
     }
+
+    @if (sugestoesAbertas()) {
+      <app-folha titulo="Sugestões do seu curso" rotulo="Matérias e temas" (fechar)="sugestoesAbertas.set(false)">
+        <app-sugestoes-curso (adicionadas)="sugestoesAbertas.set(false)" />
+      </app-folha>
+    }
   `,
   styles: `
     .barra-ferramentas { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
@@ -109,6 +123,7 @@ type Ordem = 'recentes' | 'progresso' | 'nome';
     .seletor { width: auto; min-height: 42px; flex: 0 1 200px; background-color: var(--superficie); border-color: var(--borda); }
     .contagem { margin-left: 4px; font-family: var(--mono); font-size: .7rem; color: var(--texto-suave); }
     .resultado { margin-bottom: 12px; }
+    .acoes-vazio { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 
     .cartao { display: grid; gap: 10px; align-content: start; transition: border-color .2s, transform .2s, background .2s; }
     .cartao:hover { border-color: var(--borda-forte); background: var(--superficie-2); transform: translateY(-2px); }
@@ -144,6 +159,8 @@ export class TrilhasComponent implements OnInit {
   protected categoria = signal<Categoria | ''>('');
   protected ordem = signal<Ordem>('recentes');
   protected folhaAberta = signal(false);
+  protected sugestoesAbertas = signal(false);
+  protected curso = inject(CursoService);
   protected salvando = signal(false);
 
   protected progresso = progressoDe;
