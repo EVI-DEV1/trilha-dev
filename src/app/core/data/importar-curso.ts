@@ -15,7 +15,7 @@ export class ImportarCursoService {
 
   async porLink(url: string): Promise<CursoImportado> {
     if (!MODO_NUVEM) throw new Error('A importação por link funciona com a conta na nuvem. Cole o conteúdo do curso abaixo.');
-    const { data, error } = await supabase().functions.invoke('importar-curso', { body: { url } });
+    const { data, error } = await (await supabase()).functions.invoke('importar-curso', { body: { url } });
     if (error) {
       let msg = 'Não conseguimos ler esse link.';
       try {

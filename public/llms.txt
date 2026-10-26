@@ -1,0 +1,13 @@
+# Trilha
+
+> Planner de estudos para devs, em português: organize cursos em trilhas e módulos, acompanhe o progresso, estude com um timer Pomodoro e veja seus repositórios do GitHub. App gratuito, instalável (PWA), feito em Angular por Eliane Vitoriano Luiz.
+
+## Páginas
+
+- [Boas-vindas](https://trilha-dev-one.vercel.app/boas-vindas): apresentação do app e do mascote Bento
+- [Baixar o app](https://trilha-dev-one.vercel.app/baixar): como instalar no Android, iPhone e computador
+- [Entrar](https://trilha-dev-one.vercel.app/entrar): criar conta ou entrar
+
+## Código
+
+- [Repositório no GitHub](https://github.com/EVI-DEV1/trilha-dev): código-fonte e documentação

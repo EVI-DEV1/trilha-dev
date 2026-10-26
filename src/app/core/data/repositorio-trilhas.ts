@@ -39,19 +39,19 @@ class RepositorioSupabase implements RepositorioTrilhas {
   constructor(private aviso: AvisoService) {}
 
   listar() {
-    return defer(() => supabase().from('trilhas').select(COLUNAS).order('id')).pipe(map((r) => this.dados<Trilha[]>(r)));
+    return defer(async () => (await supabase()).from('trilhas').select(COLUNAS).order('id')).pipe(map((r) => this.dados<Trilha[]>(r)));
   }
   criar(dados: NovaTrilha) {
-    return defer(() => supabase().from('trilhas').insert(dados).select(COLUNAS).single()).pipe(map((r) => this.dados<Trilha>(r)));
+    return defer(async () => (await supabase()).from('trilhas').insert(dados).select(COLUNAS).single()).pipe(map((r) => this.dados<Trilha>(r)));
   }
   atualizarModulos(id: number, modulos: Modulo[]) {
-    return defer(() => supabase().from('trilhas').update({ modulos }).eq('id', id)).pipe(map((r) => this.dados(r)));
+    return defer(async () => (await supabase()).from('trilhas').update({ modulos }).eq('id', id)).pipe(map((r) => this.dados(r)));
   }
   atualizar(id: number, dados: Partial<NovaTrilha>) {
-    return defer(() => supabase().from('trilhas').update(dados).eq('id', id)).pipe(map((r) => this.dados(r)));
+    return defer(async () => (await supabase()).from('trilhas').update(dados).eq('id', id)).pipe(map((r) => this.dados(r)));
   }
   remover(id: number) {
-    return defer(() => supabase().from('trilhas').delete().eq('id', id)).pipe(map((r) => this.dados(r)));
+    return defer(async () => (await supabase()).from('trilhas').delete().eq('id', id)).pipe(map((r) => this.dados(r)));
   }
 
   private dados<T>(r: RespostaSupabase<unknown>): T {

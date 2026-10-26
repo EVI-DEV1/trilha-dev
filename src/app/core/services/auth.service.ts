@@ -53,15 +53,15 @@ export class AuthService {
 
   constructor() {
     if (!MODO_NUVEM) return;
-    const sb = supabase();
-    this.inicio = sb.auth.getSession().then(({ data }) => {
+    this.inicio = supabase().then(async (sb) => {
+      sb.auth.onAuthStateChange((evento, sessao) => {
+        this.usuario.set(sessao?.user ?? null);
+        // Veio pelo link de "esqueci minha senha": leva direto para criar a nova senha.
+        if (evento === 'PASSWORD_RECOVERY') setTimeout(() => this.router.navigateByUrl('/redefinir-senha'));
+      });
+      const { data } = await sb.auth.getSession();
       this.usuario.set(data.session?.user ?? null);
       this.pronto.set(true);
-    });
-    sb.auth.onAuthStateChange((evento, sessao) => {
-      this.usuario.set(sessao?.user ?? null);
-      // Veio pelo link de "esqueci minha senha": leva direto para criar a nova senha.
-      if (evento === 'PASSWORD_RECOVERY') setTimeout(() => this.router.navigateByUrl('/redefinir-senha'));
     });
   }
 
@@ -72,39 +72,39 @@ export class AuthService {
 
   /** Retorna uma mensagem de erro, ou null se deu certo. */
   async entrar(email: string, senha: string): Promise<string | null> {
-    const { error } = await supabase().auth.signInWithPassword({ email, password: senha });
+    const { error } = await (await supabase()).auth.signInWithPassword({ email, password: senha });
     return error ? this.traduzir(error.message) : null;
   }
 
   /** Retorna { erro } ou { confirmar: true } quando o Supabase exige confirmação por e-mail. */
   async cadastrar(nome: string, email: string, senha: string): Promise<{ erro?: string; confirmar?: boolean }> {
-    const { data, error } = await supabase().auth.signUp({ email, password: senha, options: { data: { nome } } });
+    const { data, error } = await (await supabase()).auth.signUp({ email, password: senha, options: { data: { nome } } });
     if (error) return { erro: this.traduzir(error.message) };
     return { confirmar: !data.session };
   }
 
   /** Envia o e-mail de "esqueci minha senha". */
   async recuperarSenha(email: string): Promise<string | null> {
-    const { error } = await supabase().auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/redefinir-senha` });
+    const { error } = await (await supabase()).auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/redefinir-senha` });
     return error ? this.traduzir(error.message) : null;
   }
 
   /** Define uma nova senha (usado depois do link de recuperação). */
   async atualizarSenha(senha: string): Promise<string | null> {
-    const { error } = await supabase().auth.updateUser({ password: senha });
+    const { error } = await (await supabase()).auth.updateUser({ password: senha });
     return error ? this.traduzir(error.message) : null;
   }
 
   /** Atualiza dados do perfil (nome, meta semanal…) guardados na conta. */
   async atualizarPerfil(dados: Record<string, unknown>): Promise<string | null> {
     if (!MODO_NUVEM) return null;
-    const { data, error } = await supabase().auth.updateUser({ data: dados });
+    const { data, error } = await (await supabase()).auth.updateUser({ data: dados });
     if (data.user) this.usuario.set(data.user);
     return error ? this.traduzir(error.message) : null;
   }
 
   async sair(): Promise<void> {
-    if (MODO_NUVEM) await supabase().auth.signOut();
+    if (MODO_NUVEM) await (await supabase()).auth.signOut();
   }
 
   private traduzir(msg: string): string {
