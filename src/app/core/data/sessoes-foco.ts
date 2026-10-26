@@ -26,8 +26,8 @@ export class SessoesFocoRepositorio {
   listar(dias = 120): Observable<SessaoFoco[]> {
     const desde = new Date(Date.now() - dias * 86_400_000).toISOString();
     if (!MODO_NUVEM) return of(this.lerLocal().filter((s) => s.criado_em >= desde));
-    return defer(() =>
-      supabase().from('sessoes_foco').select('minutos, trilha_id, modulo_id, criado_em').gte('criado_em', desde).order('criado_em'),
+    return defer(async () =>
+      (await supabase()).from('sessoes_foco').select('minutos, trilha_id, modulo_id, criado_em').gte('criado_em', desde).order('criado_em'),
     ).pipe(
       map((r) => {
         if (r.error) {
@@ -47,8 +47,7 @@ export class SessoesFocoRepositorio {
       return;
     }
     supabase()
-      .from('sessoes_foco')
-      .insert(sessao)
+      .then((sb) => sb.from('sessoes_foco').insert(sessao))
       .then(({ error }) => {
         if (error) this.aviso.mostrar('Não foi possível salvar a sessão de foco. Ela ficou só neste aparelho.');
       });
