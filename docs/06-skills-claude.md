@@ -1,6 +1,6 @@
 # 6. Skills do Claude
 
-Skills são pastas com um `SKILL.md` que ensinam o Claude a fazer uma tarefa do *seu jeito*. Neste projeto elas estão em `skills-claude/`. Para o Claude Code carregá-las sozinho, mova-as para `.claude/skills/` (veja abaixo). O arquivo `CLAUDE.md` na raiz dá o contexto geral do projeto.
+Skills são pastas com um `SKILL.md` que ensinam o Claude a fazer uma tarefa do *seu jeito*. Neste projeto elas ficam em `.claude/skills/`, onde o Claude Code as encontra sozinho ao abrir a pasta do projeto. O arquivo `CLAUDE.md` na raiz dá o contexto geral do projeto.
 
 | Skill | Quando usar | Exemplo de pedido |
 |---|---|---|
@@ -8,15 +8,6 @@ Skills são pastas com um `SKILL.md` que ensinam o Claude a fazer uma tarefa do 
 | `integrar-api` | Consumir uma API nova (modelo + serviço + tratamento de erro) | "integra a API de feriados da BrasilAPI" |
 | `figma-para-codigo` | Transformar um frame do Figma em componente usando os tokens | "implementa este frame: <link do Figma>" |
 | `revisar-pr` | Revisar mudanças antes do commit/PR | "revisa o que eu mudei" |
-
-## Ativar as skills
-No terminal, dentro da pasta do projeto:
-```bash
-# Windows (PowerShell)
-New-Item -ItemType Directory -Force .claude\skills; Move-Item skills-claude\* .claude\skills\
-# Git Bash / Linux / macOS
-mkdir -p .claude/skills && mv skills-claude/* .claude/skills/
-```
 
 ## Como usar
 - **Claude Code** (terminal ou VS Code): abra a pasta do projeto e peça normalmente; ou chame pelo nome, ex. `/criar-componente-angular`.

@@ -22,7 +22,7 @@
   </script>
 </head>
 <body>
-  <script>try{document.documentElement.dataset.tema=localStorage.getItem("trilha-dev:tema")||"escuro"}catch(e){}</script>
+  <script>(function(){var t;try{t=localStorage.getItem("trilha-dev:tema")}catch(e){}if(t!=="claro"&&t!=="escuro")t=matchMedia("(prefers-color-scheme: light)").matches?"claro":"escuro";document.documentElement.dataset.tema=t})()</script>
   <app-root></app-root>
   <noscript>Ative o JavaScript para usar o Trilha Dev.</noscript>
 </body>

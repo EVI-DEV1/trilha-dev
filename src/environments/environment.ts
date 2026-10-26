@@ -3,6 +3,7 @@ export const environment = {
   production: false,
   apiUrl: '/api',
   githubApi: 'https://api.github.com',
+  brasilApi: 'https://brasilapi.com.br/api',
   githubUser: 'EVI-DEV1',
   nomeUsuario: 'Eliane',
   // Cole aqui os dados do seu projeto Supabase (veja docs/09-supabase.md).

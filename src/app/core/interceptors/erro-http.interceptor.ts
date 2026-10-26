@@ -1,7 +1,10 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { AvisoService } from '../services/aviso.service';
+
+/** Marque uma requisição com este token para o erro não virar aviso na tela (ex.: cards opcionais). */
+export const SILENCIOSO = new HttpContextToken<boolean>(() => false);
 
 /** Traduz erros HTTP em mensagens amigáveis, em um só lugar. */
 export const erroHttpInterceptor: HttpInterceptorFn = (req, next) => {
@@ -9,7 +12,7 @@ export const erroHttpInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((erro: HttpErrorResponse) => {
-      aviso.mostrar(mensagemPara(erro, req.url));
+      if (!req.context.get(SILENCIOSO)) aviso.mostrar(mensagemPara(erro, req.url));
       return throwError(() => erro);
     }),
   );

@@ -14,7 +14,7 @@ description: Use ao criar uma página ou componente novo no Trilha Dev (Angular 
 - Estado local com `signal`; derivados com `computed`.
 - Dependências com `inject()`; dados vêm de `core/services/`, nunca `HttpClient` no componente.
 - Template com `@if`, `@for (x of lista(); track x.id)`, `@empty`.
-- Estilos usando só variáveis de `src/styles.scss` (`--cor-*`, `--espaco-*`, `--raio-*`) e classes globais (`.card`, `.btn`, `.chip`, `.grade`).
+- Estilos usando só variáveis de `src/styles.scss` (`--fundo`, `--superficie*`, `--texto*`, `--acento*`, `--borda*`, `--r-*`) e classes globais (`.painel`, `.btn`, `.chip`, `.campo`, `.grade-auto`).
 - Acessibilidade: `aria-label` em botões só com ícone, `alt` em imagens, foco visível.
 
 Modelo:
@@ -23,7 +23,7 @@ import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-exemplo',
-  template: `<section class="card"><h2>{{ titulo() }}</h2></section>`,
+  template: `<section class="painel"><h2>{{ titulo() }}</h2></section>`,
   styles: `h2 { margin: 0; }`,
 })
 export class ExemploComponent {

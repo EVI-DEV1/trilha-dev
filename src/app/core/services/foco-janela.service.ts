@@ -66,7 +66,7 @@ export class FocoJanelaService {
         .fase.pausa { color: #4fc3a1; }
         .tempo { font-family: 'Playfair Display', Georgia, serif; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
         .modulo { max-width: 200px; font-size: 10px; color: #8794b0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: #5b8def; color: #fff; cursor: pointer; display: grid; place-items: center; }
+        button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: #5b8def; color: #0a1020; cursor: pointer; display: grid; place-items: center; }
         .pista { stroke: #22304f; }
         .rabo { transform-box: view-box; transform-origin: 156px 152px; transition: transform .9s linear; }
         .progresso { transition: stroke-dasharray .9s linear; }

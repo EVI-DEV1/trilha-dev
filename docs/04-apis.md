@@ -49,6 +49,17 @@ Campos usados estão em `core/models/github.model.ts`. Status tratados no interc
 
 > ⚠️ Nunca coloque um token do GitHub no front-end: ele fica visível para qualquer pessoa. Se precisar de mais requisições, crie uma função serverless (ex.: Vercel Functions) que guarda o token no servidor.
 
-## 4.3 Ideias de APIs para próximas versões
-- **Calendário/feriados** (BrasilAPI `/api/feriados/v1/{ano}`) para planejar a semana de estudos.
+## 4.3 BrasilAPI: feriados nacionais
+Base: `https://brasilapi.com.br/api` · pública, sem chave.
+
+| Método | Rota | Uso |
+|---|---|---|
+| GET | `/feriados/v1/{ano}` | Lista de feriados nacionais do ano (`date`, `name`, `type`) |
+
+O `FeriadosService.proximo()` pega o primeiro feriado a partir de hoje e, se o ano já acabou, consulta o ano seguinte. O resultado aparece no card **Próximo feriado** do painel.
+- A requisição leva o token `SILENCIOSO` (`erro-http.interceptor.ts`): se a API falhar, o card simplesmente não aparece, sem aviso de erro na tela.
+- O service worker guarda a resposta por 7 dias (`ngsw-config.json`, grupo `feriados`), então o card funciona offline.
+- As datas chegam como `"AAAA-MM-DD"`; o serviço converte para data local para evitar que `new Date()` mostre o dia anterior por causa do fuso.
+
+## 4.4 Ideias de APIs para próximas versões
 - **Dev.to** (`/api/articles?tag=angular`) para sugerir leituras por tema da trilha.
