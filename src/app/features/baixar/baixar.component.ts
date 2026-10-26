@@ -104,7 +104,7 @@ interface Guia {
     <footer class="rodape suave">Trilha · feito para quem estuda programação</footer>
   `,
   styles: `
-    :host { display: block; min-height: 100dvh; background: var(--brilho), var(--fundo); padding: clamp(16px, 4vw, 40px); }
+    :host { display: block; min-height: 100dvh; background: var(--brilho), var(--fundo); padding: clamp(16px, 4vw, 40px); padding-top: calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-top)); }
     main, .topo, .rodape { max-width: 1080px; margin: 0 auto; }
     .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: clamp(24px, 5vw, 56px); }
     .topo a:first-child { color: inherit; text-decoration: none; }

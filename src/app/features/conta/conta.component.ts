@@ -12,6 +12,7 @@ import { FolhaComponent } from '../../shared/folha.component';
 import { SugestoesCursoComponent } from '../../shared/sugestoes-curso.component';
 import { CursoService } from '../../core/services/curso.service';
 import { AtualizacaoService } from '../../core/services/atualizacao.service';
+import { InstalarService } from '../../core/services/instalar.service';
 
 @Component({
   selector: 'app-conta',
@@ -71,16 +72,18 @@ import { AtualizacaoService } from '../../core/services/atualizacao.service';
         </div>
       </section>
 
-      <section class="painel">
-        <div class="secao-cab"><h2>App</h2></div>
-        <div class="preferencia">
-          <div>
-            <strong>Instalar o Trilha</strong>
-            <p class="suave">Grátis, no celular ou no computador. Abre como app e funciona sem internet.</p>
+      @if (!instalar.instalado()) {
+        <section class="painel">
+          <div class="secao-cab"><h2>App</h2></div>
+          <div class="preferencia">
+            <div>
+              <strong>Instalar o Trilha</strong>
+              <p class="suave">Grátis, no celular ou no computador. Abre como app e funciona sem internet.</p>
+            </div>
+            <a class="btn btn-secundario" routerLink="/baixar"><app-icone nome="download" [tamanho]="16" /> Baixar</a>
           </div>
-          <a class="btn btn-secundario" routerLink="/baixar"><app-icone nome="download" [tamanho]="16" /> Baixar</a>
-        </div>
-      </section>
+        </section>
+      }
 
       <section class="painel">
         <div class="secao-cab"><h2>Conexões</h2></div>
@@ -173,6 +176,8 @@ export class ContaComponent {
   protected sugestoesAbertas = signal(false);
   protected curso = inject(CursoService);
   protected atualizacao = inject(AtualizacaoService);
+  /** Aberto como app instalado: esconde "Instalar o Trilha". */
+  protected instalar = inject(InstalarService);
   protected atualizando = signal(false);
 
   async salvarNome(): Promise<void> {
