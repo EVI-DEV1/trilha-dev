@@ -6,6 +6,17 @@ export type Fase = 'foco' | 'pausa';
 export const OPCOES_FOCO = [15, 25, 50] as const;
 export const OPCOES_META_HORAS = [2, 5, 8, 12] as const;
 const CHAVE_META_LOCAL = 'trilha-dev:meta-semanal';
+const CHAVE_TIMER = 'trilha-dev:timer';
+
+/** Estado do timer salvo no aparelho (sobrevive a recarregar o app ou o celular fechá-lo). */
+interface EstadoTimer {
+  fase: Fase;
+  restante: number;
+  rodando: boolean;
+  fimEm: number | null;
+  minutosFoco: number;
+  alvo: AlvoFoco | null;
+}
 
 /** Módulo que está sendo estudado no timer. */
 export interface AlvoFoco {
@@ -22,6 +33,8 @@ export function isoDe(d: Date): string {
 
 /**
  * Timer Pomodoro global (continua rodando ao trocar de página) e estatísticas de foco.
+ * O tempo é calculado pelo horário de término (`fimEm`), não por contagem de segundos:
+ * no celular o sistema pausa o app em segundo plano, e ao voltar o tempo já aparece certo.
  * As sessões ficam no Supabase no modo nuvem, ou no navegador no modo local.
  */
 @Injectable({ providedIn: 'root' })
@@ -38,6 +51,16 @@ export class FocoService {
 
   private metaLocal = signal<number>(this.lerMetaLocal());
   private intervalo?: ReturnType<typeof setInterval>;
+  /** Horário (ms) em que a fase atual termina, enquanto o timer está rodando. */
+  private fimEm: number | null = null;
+
+  constructor() {
+    this.restaurar();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.sincronizar();
+    });
+    window.addEventListener('pageshow', () => this.sincronizar());
+  }
 
   // ----- timer -----
   readonly duracaoFase = computed(() => (this.fase() === 'foco' ? this.minutosFoco() : this.minutosPausa()) * 60);
@@ -124,6 +147,7 @@ export class FocoService {
 
   focarEm(alvo: AlvoFoco | null): void {
     this.alvo.set(alvo);
+    this.salvar();
   }
 
   async definirMeta(horas: number): Promise<void> {
@@ -141,18 +165,24 @@ export class FocoService {
     if (this.rodando()) return;
     this.minutosFoco.set(minutos);
     if (this.fase() === 'foco') this.restante.set(minutos * 60);
+    this.salvar();
   }
 
   iniciar(): void {
     if (this.rodando()) return;
     this.pedirPermissaoNotificacao();
+    this.fimEm = Date.now() + this.restante() * 1000;
     this.rodando.set(true);
-    this.intervalo = setInterval(() => this.tique(), 1000);
+    this.ligarRelogio();
+    this.salvar();
   }
 
   pausar(): void {
+    if (this.rodando()) this.sincronizar();
     clearInterval(this.intervalo);
+    this.fimEm = null;
     this.rodando.set(false);
+    this.salvar();
   }
 
   alternar(): void {
@@ -163,38 +193,105 @@ export class FocoService {
     this.pausar();
     this.fase.set('foco');
     this.restante.set(this.minutosFoco() * 60);
+    this.salvar();
   }
 
   /** Encerra a fase atual agora (registra os minutos já focados). */
   pular(): void {
+    if (this.rodando()) this.sincronizar();
     if (this.fase() === 'foco') {
       const focados = Math.floor((this.duracaoFase() - this.restante()) / 60);
       if (focados > 0) this.registrar(focados);
     }
     this.trocarFase();
+    if (this.rodando()) this.fimEm = Date.now() + this.duracaoFase() * 1000;
+    this.salvar();
   }
+
 
   private minutosPausa(): number {
     return this.minutosFoco() >= 50 ? 10 : 5;
   }
 
-  private tique(): void {
-    if (this.restante() > 1) {
-      this.restante.update((s) => s - 1);
-      return;
+  private ligarRelogio(): void {
+    clearInterval(this.intervalo);
+    this.intervalo = setInterval(() => this.sincronizar(), 1000);
+  }
+
+  /**
+   * Acerta o tempo pelo relógio. Se uma ou mais fases terminaram enquanto o app
+   * estava em segundo plano, registra o foco concluído e avança as fases.
+   * Uma pausa que terminou com o app fechado não inicia outro foco sozinha:
+   * o timer espera no começo do próximo ciclo.
+   */
+  private sincronizar(): void {
+    if (!this.rodando() || this.fimEm == null) return;
+    const agora = Date.now();
+    let mudou = false;
+    let terminouFoco = false;
+    while (this.rodando() && this.fimEm != null && agora >= this.fimEm) {
+      const atrasado = agora - this.fimEm > 2000;
+      terminouFoco = this.fase() === 'foco';
+      if (terminouFoco) this.registrar(this.minutosFoco());
+      this.trocarFase();
+      mudou = true;
+      if (!terminouFoco && atrasado) {
+        clearInterval(this.intervalo);
+        this.fimEm = null;
+        this.rodando.set(false);
+      } else {
+        this.fimEm += this.duracaoFase() * 1000;
+      }
     }
-    const terminouFoco = this.fase() === 'foco';
-    if (terminouFoco) this.registrar(this.minutosFoco());
-    this.trocarFase();
-    this.notificar(
-      terminouFoco ? 'Ciclo de foco concluído' : 'Pausa encerrada',
-      terminouFoco ? `Hora de uma pausa de ${this.minutosPausa()} min.` : `Mais ${this.minutosFoco()} min de foco${this.alvo() ? ' em ' + this.alvo()!.modulo : ''}.`,
-    );
+    if (this.fimEm != null) this.restante.set(Math.max(0, Math.ceil((this.fimEm - agora) / 1000)));
+    if (mudou) {
+      this.notificar(
+        terminouFoco ? 'Ciclo de foco concluído' : 'Pausa encerrada',
+        terminouFoco ? `Hora de uma pausa de ${this.minutosPausa()} min.` : `Mais ${this.minutosFoco()} min de foco${this.alvo() ? ' em ' + this.alvo()!.modulo : ''}.`,
+      );
+      this.salvar();
+    }
   }
 
   private trocarFase(): void {
     this.fase.set(this.fase() === 'foco' ? 'pausa' : 'foco');
     this.restante.set(this.duracaoFase());
+  }
+
+  private salvar(): void {
+    const estado: EstadoTimer = {
+      fase: this.fase(),
+      restante: this.restante(),
+      rodando: this.rodando(),
+      fimEm: this.fimEm,
+      minutosFoco: this.minutosFoco(),
+      alvo: this.alvo(),
+    };
+    try {
+      localStorage.setItem(CHAVE_TIMER, JSON.stringify(estado));
+    } catch {
+      /* só em memória */
+    }
+  }
+
+  private restaurar(): void {
+    let estado: EstadoTimer | null = null;
+    try {
+      estado = JSON.parse(localStorage.getItem(CHAVE_TIMER) ?? 'null');
+    } catch {
+      estado = null;
+    }
+    if (!estado) return;
+    this.minutosFoco.set(estado.minutosFoco || 25);
+    this.fase.set(estado.fase === 'pausa' ? 'pausa' : 'foco');
+    this.restante.set(estado.restante > 0 ? estado.restante : this.duracaoFase());
+    this.alvo.set(estado.alvo ?? null);
+    if (estado.rodando && estado.fimEm) {
+      this.fimEm = estado.fimEm;
+      this.rodando.set(true);
+      this.ligarRelogio();
+      this.sincronizar();
+    }
   }
 
   private registrar(minutos: number): void {
@@ -213,11 +310,21 @@ export class FocoService {
   private notificar(titulo: string, corpo: string): void {
     try {
       navigator.vibrate?.([200, 100, 200]);
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(titulo, { body: corpo, icon: 'icons/icone-192.png', tag: 'trilha-foco' });
-      }
     } catch {
-      /* alguns navegadores móveis só notificam via service worker */
+      /* sem vibração */
+    }
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const opcoes = { body: corpo, icon: 'icons/icone-192.png', tag: 'trilha-foco' };
+    // No celular (inclusive o app instalado no iPhone) a notificação precisa sair pelo service worker.
+    const sw = navigator.serviceWorker;
+    if (sw?.controller) {
+      sw.ready.then((r) => r.showNotification(titulo, opcoes)).catch(() => undefined);
+      return;
+    }
+    try {
+      new Notification(titulo, opcoes);
+    } catch {
+      /* navegador sem suporte ao construtor */
     }
   }
 
