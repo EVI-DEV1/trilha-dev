@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, untracked } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -9,6 +9,7 @@ import { AvisoService } from './core/services/aviso.service';
 import { FocoService } from './core/services/foco.service';
 import { ComemoracaoService } from './core/services/comemoracao.service';
 import { TemaService } from './core/services/tema.service';
+import { AtualizacaoService } from './core/services/atualizacao.service';
 import { ConfeteComponent } from './shared/confete.component';
 import { IconeComponent, NomeIcone } from './shared/icone.component';
 import { MarcaComponent } from './shared/marca.component';
@@ -94,6 +95,14 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
     @if (comShell() && foco.sessaoAtiva() && !naTelaFoco()) { <app-foco-flutuante /> }
 
     @if (comemoracao.mensagem(); as festa) { <app-confete [mensagem]="festa" /> }
+
+    @if (atualizacao.disponivel() && !atualizacaoDispensada()) {
+      <div class="atualizacao" role="status">
+        <span><strong>Nova versão do Trilha</strong> pronta para usar.</span>
+        <button class="btn btn-primario btn-sm" type="button" (click)="atualizacao.atualizar()">Atualizar</button>
+        <button class="btn-icone fechar-atualizacao" type="button" aria-label="Depois" (click)="atualizacaoDispensada.set(true)"><app-icone nome="fechar" [tamanho]="15" /></button>
+      </div>
+    }
 
     @if (aviso.mensagem(); as msg) {
       <div class="aviso" role="status" (click)="aviso.limpar()">{{ msg }}</div>
@@ -208,6 +217,17 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
     }
     @media (max-width: 767px) { .aviso { bottom: calc(var(--nav-movel) + 16px + env(safe-area-inset-bottom)); } }
     @keyframes entra { from { opacity: 0; translate: 0 8px; } }
+
+    .atualizacao {
+      position: fixed; z-index: 95; left: 50%; top: calc(14px + env(safe-area-inset-top)); transform: translateX(-50%);
+      display: flex; align-items: center; gap: 10px;
+      width: max-content; max-width: calc(100% - 24px);
+      padding: 8px 8px 8px 16px; border-radius: var(--r-2);
+      background: var(--superficie-3); color: var(--texto); border: 1px solid var(--borda-forte); box-shadow: var(--sombra);
+      font-size: .88rem; animation: entra .3s var(--ease);
+    }
+    .atualizacao strong { font-weight: 600; }
+    .fechar-atualizacao { width: 32px; height: 32px; border: 0; }
   `,
 })
 export class AppComponent {
@@ -219,6 +239,9 @@ export class AppComponent {
   protected comemoracao = inject(ComemoracaoService);
   // Criado já na abertura para acompanhar a troca de tema do sistema em qualquer página.
   private tema = inject(TemaService);
+  // Procura versões novas do app instalado e mostra o aviso "Atualizar".
+  protected atualizacao = inject(AtualizacaoService);
+  protected atualizacaoDispensada = signal(false);
 
   protected menu: ItemMenu[] = [
     { rota: '/', rotulo: 'Painel', icone: 'painel' },

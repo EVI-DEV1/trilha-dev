@@ -11,6 +11,7 @@ import { IconeComponent } from '../../shared/icone.component';
 import { FolhaComponent } from '../../shared/folha.component';
 import { SugestoesCursoComponent } from '../../shared/sugestoes-curso.component';
 import { CursoService } from '../../core/services/curso.service';
+import { AtualizacaoService } from '../../core/services/atualizacao.service';
 
 @Component({
   selector: 'app-conta',
@@ -115,6 +116,15 @@ import { CursoService } from '../../core/services/curso.service';
           </div>
           <button class="btn btn-secundario" type="button" (click)="sugestoesAbertas.set(true)">{{ curso.curso() ? 'Ver sugestões' : 'Escolher' }}</button>
         </div>
+        <div class="preferencia">
+          <div>
+            <strong>Atualizar app</strong>
+            <p class="suave">{{ atualizacao.disponivel() ? 'Há uma versão nova pronta. Toque para atualizar.' : 'Busca a versão mais recente do Trilha e recarrega o app.' }}</p>
+          </div>
+          <button class="btn" [class.btn-primario]="atualizacao.disponivel()" [class.btn-secundario]="!atualizacao.disponivel()" type="button" (click)="atualizarApp()" [disabled]="atualizando()">
+            <app-icone nome="reiniciar" [tamanho]="16" /> {{ atualizando() ? 'Verificando…' : 'Atualizar' }}
+          </button>
+        </div>
       </section>
 
       @if (auth.modoNuvem) {
@@ -162,6 +172,8 @@ export class ContaComponent {
   protected salvandoNome = signal(false);
   protected sugestoesAbertas = signal(false);
   protected curso = inject(CursoService);
+  protected atualizacao = inject(AtualizacaoService);
+  protected atualizando = signal(false);
 
   async salvarNome(): Promise<void> {
     this.salvandoNome.set(true);
@@ -188,6 +200,18 @@ export class ContaComponent {
     a.download = `trilha-dados-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  /** Procura uma versão nova; se houver, instala e recarrega. */
+  async atualizarApp(): Promise<void> {
+    this.atualizando.set(true);
+    const temNova = await this.atualizacao.verificar();
+    if (temNova) {
+      await this.atualizacao.atualizar();
+      return;
+    }
+    this.atualizando.set(false);
+    this.aviso.mostrar('Você já está usando a versão mais recente.');
   }
 
   async sair(): Promise<void> {
