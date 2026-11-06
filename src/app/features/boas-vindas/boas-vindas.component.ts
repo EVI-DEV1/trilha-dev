@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { IconeComponent } from '../../shared/icone.component';
 import { MarcaComponent } from '../../shared/marca.component';
 import { MascoteComponent } from '../../shared/mascote.component';
+import { InstalarService } from '../../core/services/instalar.service';
 
 export const CHAVE_BOAS_VINDAS = 'trilha-dev:boas-vindas';
 
@@ -20,7 +21,7 @@ interface Passo {
     <header class="topo">
       <app-marca />
       <nav class="topo-links">
-        <a class="link-texto" routerLink="/baixar">Baixar o app</a>
+        @if (!instalar.instalado()) { <a class="link-texto" routerLink="/baixar">Baixar o app</a> }
         <button class="link-texto" type="button" (click)="concluir()">Pular</button>
       </nav>
     </header>
@@ -56,7 +57,7 @@ interface Passo {
     </main>
   `,
   styles: `
-    :host { display: flex; flex-direction: column; min-height: 100dvh; padding: clamp(20px, 4vw, 48px); background: var(--brilho), var(--fundo); }
+    :host { display: flex; flex-direction: column; min-height: 100dvh; padding: clamp(20px, 4vw, 48px); padding-top: calc(clamp(20px, 4vw, 48px) + env(safe-area-inset-top)); background: var(--brilho), var(--fundo); }
     .topo { display: flex; justify-content: space-between; align-items: center; }
     .topo-links { display: flex; gap: 18px; align-items: center; }
     .palco { flex: 1; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(24px, 6vw, 96px); max-width: 1180px; width: 100%; margin: 0 auto; }
@@ -80,6 +81,8 @@ interface Passo {
 })
 export class BoasVindasComponent {
   private router = inject(Router);
+  /** Já instalado (aberto como app): não precisa mostrar "Baixar o app". */
+  protected instalar = inject(InstalarService);
 
   protected passos: Passo[] = [
     { titulo: 'Oi, eu sou o Bento! Vamos organizar seus estudos em', destaque: 'trilhas?', texto: 'Cursos, formações e matérias da faculdade em um só lugar, com o progresso de cada módulo sempre à vista.' },

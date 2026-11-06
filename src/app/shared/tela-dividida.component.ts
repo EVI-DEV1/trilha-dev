@@ -44,9 +44,10 @@ import { MascoteComponent } from './mascote.component';
     .miolo { width: min(420px, 100%); }
     @media (max-width: 899px) {
       :host { grid-template-columns: 1fr; }
-      .arte { min-height: auto; padding: 22px 20px 26px; gap: 18px; }
+      /* iPhone: o topo fica abaixo da barra de hora/bateria (área segura) */
+      .arte { min-height: auto; padding: calc(22px + env(safe-area-inset-top)) 20px 26px; gap: 18px; }
       .arte ul, .rodape { display: none; }
-      .bento { width: 92px; right: 16px; bottom: auto; top: 10px; }
+      .bento { width: 92px; right: 16px; bottom: auto; top: calc(10px + env(safe-area-inset-top)); }
       .bento ::ng-deep svg { width: 92px; height: auto; }
       .frase { font-size: 2rem; }
       .lado { place-items: start center; padding-top: 28px; }
