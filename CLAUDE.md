@@ -21,3 +21,4 @@ Projeto **Trilha Dev**: app Angular 19 de planejamento de estudos. Autora: Elian
 
 ## Comandos
 - `npm run dev` API + front · `npm run build` build de produção
+- Versão: a cada entrega, aumente o `"version"` do `package.json` (ex.: 1.2.0 → 1.3.0). O build grava o número no app e no service worker (`scripts/versao.mjs`), e ele aparece em Conta → Atualizar app.

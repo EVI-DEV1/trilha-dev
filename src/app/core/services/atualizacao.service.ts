@@ -1,6 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
+import { VERSAO_ATUAL } from '../data/versao';
+import { InfoVersao, lerVersao } from '../models/versao.model';
 
 /**
  * Atualização do app instalado (PWA). O service worker guarda o site para funcionar offline,
@@ -14,12 +16,19 @@ export class AtualizacaoService {
   /** Há uma versão nova baixada, esperando para ser ativada. */
   readonly disponivel = signal(false);
   readonly verificando = signal(false);
+  /** Versão que está rodando agora. */
+  readonly atual: InfoVersao = VERSAO_ATUAL;
+  /** Número da versão nova, quando há uma baixada esperando para ser ativada. */
+  readonly nova = signal<InfoVersao | null>(null);
 
   constructor() {
     if (!this.sw.isEnabled) return;
     this.sw.versionUpdates
       .pipe(filter((e): e is VersionReadyEvent => e.type === 'VERSION_READY'))
-      .subscribe(() => this.disponivel.set(true));
+      .subscribe((e) => {
+        this.nova.set(lerVersao(e.latestVersion.appData));
+        this.disponivel.set(true);
+      });
     // Cache corrompido (raro): recarrega para buscar tudo de novo.
     this.sw.unrecoverable.subscribe(() => location.reload());
     this.verificar();

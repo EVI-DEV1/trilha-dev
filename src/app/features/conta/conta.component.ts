@@ -13,6 +13,7 @@ import { SugestoesCursoComponent } from '../../shared/sugestoes-curso.component'
 import { CursoService } from '../../core/services/curso.service';
 import { AtualizacaoService } from '../../core/services/atualizacao.service';
 import { InstalarService } from '../../core/services/instalar.service';
+import { rotuloVersao } from '../../core/models/versao.model';
 
 @Component({
   selector: 'app-conta',
@@ -122,7 +123,17 @@ import { InstalarService } from '../../core/services/instalar.service';
         <div class="preferencia">
           <div>
             <strong>Atualizar app</strong>
-            <p class="suave">{{ atualizacao.disponivel() ? 'Há uma versão nova pronta. Toque para atualizar.' : 'Busca a versão mais recente do Trilha e recarrega o app.' }}</p>
+            <p class="suave versoes">
+              <span>Você está na versão <b class="num">{{ rotulo(atualizacao.atual) }}</b>.</span>
+              @if (atualizacao.disponivel()) {
+                <span class="nova">
+                  Versão nova pronta:
+                  <b class="num">{{ atualizacao.nova() ? rotulo(atualizacao.nova()!) : 'sem número' }}</b>. Toque em Atualizar.
+                </span>
+              } @else {
+                <span>Toque em Atualizar para procurar uma versão mais recente.</span>
+              }
+            </p>
           </div>
           <button class="btn" [class.btn-primario]="atualizacao.disponivel()" [class.btn-secundario]="!atualizacao.disponivel()" type="button" (click)="atualizarApp()" [disabled]="atualizando()">
             <app-icone nome="reiniciar" [tamanho]="16" /> {{ atualizando() ? 'Verificando…' : 'Atualizar' }}
@@ -159,6 +170,9 @@ import { InstalarService } from '../../core/services/instalar.service';
     .preferencia > div:first-child { flex: 1 1 280px; }
     .preferencia strong { font-weight: 600; }
     .preferencia p { font-size: .86rem; margin-top: 2px; }
+    .versoes { display: grid; gap: 2px; }
+    .versoes b { font-weight: 600; color: var(--texto); }
+    .versoes .nova, .versoes .nova b { color: var(--acento); }
     @media (max-width: 640px) { .form { grid-template-columns: 1fr; } }
   `,
 })
@@ -179,6 +193,7 @@ export class ContaComponent {
   /** Aberto como app instalado: esconde "Instalar o Trilha". */
   protected instalar = inject(InstalarService);
   protected atualizando = signal(false);
+  protected rotulo = rotuloVersao;
 
   async salvarNome(): Promise<void> {
     this.salvandoNome.set(true);

@@ -1,6 +1,6 @@
 {
   "name": "trilha-dev",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Planner de estudos para devs: trilhas, progresso, foco (Pomodoro) e integração com a API do GitHub.",
   "author": "Eliane Vitoriano Luiz (EVI-DEV1)",
@@ -9,7 +9,7 @@
     "start": "ng serve --poll 1500",
     "api": "json-server --watch db.json --port 3000",
     "dev": "concurrently -n api,web -c magenta,cyan \"npm run api\" \"npm start\"",
-    "prebuild": "node scripts/env.mjs",
+    "prebuild": "node scripts/env.mjs && node scripts/versao.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development"
   },
