@@ -120,7 +120,7 @@ import { formatarMinutos } from '../../shared/formatos';
     .meta .link-texto { justify-self: start; }
 
     .sessoes { list-style: none; margin: 0; padding: 0; }
-    .sessoes li { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--borda); font-size: .88rem; }
+    .sessoes li { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 8px 20px; align-items: center; padding: 14px 0; line-height: 1.4; border-top: 1px solid var(--borda); font-size: .88rem; }
     .sessoes li:first-child { border-top: 0; padding-top: 0; }
     .sessoes li:only-child { display: block; }
     .sessoes .suave { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

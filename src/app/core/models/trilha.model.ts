@@ -38,6 +38,9 @@ export function rotuloCategoria(c: Categoria): string {
 }
 
 /** Paleta das trilhas, em harmonia com o tema azul. */
+/** Limite de módulos por trilha — o mesmo para importar, colar e adicionar à mão. */
+export const MAX_MODULOS = 200;
+
 export const CORES_TRILHA = ['#5B8DEF', '#4FC3A1', '#F2B45A', '#E9798A', '#A78BFA', '#7DD3FC'];
 
 export function proximoModulo(t: Trilha): Modulo | undefined {

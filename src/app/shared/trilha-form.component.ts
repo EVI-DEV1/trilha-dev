@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ImportarCursoService, separarModulos } from '../core/data/importar-curso';
-import { CATEGORIAS, CORES_TRILHA, Categoria, NovaTrilha } from '../core/models/trilha.model';
+import { CATEGORIAS, CORES_TRILHA, Categoria, MAX_MODULOS, NovaTrilha } from '../core/models/trilha.model';
 import { IconeComponent } from './icone.component';
 
 /** Formulário de trilha, usado para criar (com módulos) e para editar (sem módulos). */
@@ -63,9 +63,19 @@ import { IconeComponent } from './icone.component';
           <span>Módulos</span>
           <textarea class="campo" formControlName="modulos" rows="7" (paste)="aoColar($event)"
             placeholder="Um módulo por linha — ou cole aqui o conteúdo copiado do site do curso&#10;Ex.: Componentes&#10;Signals&#10;Rotas"></textarea>
-          <small class="campo-dica">
-            {{ totalModulos() }} {{ totalModulos() === 1 ? 'módulo' : 'módulos' }}.
-            Colou um texto bagunçado? <button type="button" class="link-texto" (click)="organizar()">Organizar lista</button>
+          <div class="modulos-rodape">
+            <small [class.campo-erro]="totalModulos() > maxModulos" [class.campo-dica]="totalModulos() <= maxModulos">
+              {{ totalModulos() }} de {{ maxModulos }} módulos{{ totalModulos() > maxModulos ? ' — apague ' + (totalModulos() - maxModulos) + ' para salvar' : '' }}
+            </small>
+            <button type="button" class="btn btn-secundario btn-sm" (click)="organizar()" [disabled]="!totalModulos()"
+              aria-describedby="dica-limpar">
+              <app-icone nome="check" [tamanho]="14" /> Limpar lista
+            </button>
+          </div>
+          @if (msgLista(); as m) { <small role="status" [class.campo-erro]="m.erro" [class.campo-ok]="!m.erro">{{ m.texto }}</small> }
+          <small id="dica-limpar" class="campo-dica">
+            Copiou as aulas de um site? <strong>Limpar lista</strong> deixa um módulo por linha: tira marcadores (•, -, ✓),
+            durações (“12 min”, “05:30”), contagens (“8 aulas”) e linhas repetidas.
           </small>
         </label>
       }
@@ -90,7 +100,8 @@ import { IconeComponent } from './icone.component';
     .importar-linha { display: flex; gap: 8px; }
     .importar-linha .campo { flex: 1; min-width: 0; }
     .campo-ok { font-size: .78rem; color: var(--sucesso); }
-    .campo-dica .link-texto { font-size: inherit; }
+    .modulos-rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+    .campo-dica strong { color: var(--texto-2); font-weight: 600; }
     @media (max-width: 480px) { .importar-linha { flex-direction: column; } }
     .rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-top: 8px; }
     .rodape .btn-primario { margin-left: auto; }
@@ -101,6 +112,8 @@ export class TrilhaFormComponent implements OnInit {
   private importador = inject(ImportarCursoService);
   protected importando = signal(false);
   protected msgImport = signal<{ texto: string; erro: boolean } | null>(null);
+  /** Retorno de "Limpar lista", do texto colado e do limite de módulos (aparece logo abaixo do campo). */
+  protected msgLista = signal<{ texto: string; erro: boolean } | null>(null);
 
   inicial = input<Partial<NovaTrilha> | null>(null);
   comModulos = input(true);
@@ -110,6 +123,7 @@ export class TrilhaFormComponent implements OnInit {
 
   protected categorias = CATEGORIAS;
   protected cores = CORES_TRILHA;
+  protected maxModulos = MAX_MODULOS;
 
   protected form = this.fb.nonNullable.group({
     titulo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
@@ -151,7 +165,12 @@ export class TrilhaFormComponent implements OnInit {
         plataforma: atual.plataforma.trim() ? atual.plataforma : c.plataforma.slice(0, 60),
         modulos: c.modulos.join('\n'),
       });
-      this.msgImport.set({ texto: `Pronto! ${c.modulos.length} módulos importados. Revise e ajuste o que quiser.`, erro: false });
+      this.msgImport.set({
+        texto: c.total && c.total > c.modulos.length
+          ? `Importamos os ${c.modulos.length} primeiros de ${c.total} módulos (o limite é ${MAX_MODULOS} por trilha). Para o resto, crie uma segunda trilha.`
+          : `Pronto! ${c.modulos.length} módulos importados. Revise e ajuste o que quiser.`,
+        erro: false,
+      });
     } catch (e) {
       this.msgImport.set({ texto: e instanceof Error ? e.message : 'Não foi possível importar.', erro: true });
     } finally {
@@ -167,14 +186,36 @@ export class TrilhaFormComponent implements OnInit {
     const atual = this.form.controls.modulos.value.trim();
     const novos = separarModulos(texto);
     this.form.controls.modulos.setValue([atual, ...novos].filter(Boolean).join('\n'));
-    this.msgImport.set({ texto: `${novos.length} módulos reconhecidos no texto colado.`, erro: false });
+    const total = this.totalModulos();
+    this.msgLista.set({
+      texto: total > MAX_MODULOS
+        ? `${novos.length} módulos reconhecidos, mas a trilha passou de ${MAX_MODULOS}. Apague os que sobrarem ou divida em duas trilhas.`
+        : `${novos.length} módulos reconhecidos no texto colado.`,
+      erro: total > MAX_MODULOS,
+    });
   }
 
+  /** "Limpar lista": um módulo por linha, sem marcadores, durações nem repetidos. */
   organizar(): void {
-    this.form.controls.modulos.setValue(separarModulos(this.form.controls.modulos.value).join('\n'));
+    const antes = this.form.controls.modulos.value.split('\n').map((l) => l.trim()).filter(Boolean);
+    const depois = separarModulos(antes.join('\n'));
+    this.form.controls.modulos.setValue(depois.join('\n'));
+    const mudou = depois.length !== antes.length || depois.some((l, i) => l !== antes[i]);
+    this.msgLista.set({
+      texto: !mudou
+        ? 'A lista já estava limpa: um módulo por linha.'
+        : depois.length < antes.length
+          ? `Lista limpa: ${antes.length} linhas viraram ${depois.length} módulos.`
+          : 'Lista limpa: marcadores e durações removidos.',
+      erro: false,
+    });
   }
 
   enviar(): void {
+    if (this.totalModulos() > MAX_MODULOS) {
+      this.msgLista.set({ texto: `Uma trilha pode ter até ${MAX_MODULOS} módulos. Apague os que sobrarem ou divida em duas trilhas.`, erro: true });
+      return;
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

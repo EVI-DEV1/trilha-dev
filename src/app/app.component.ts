@@ -10,6 +10,7 @@ import { FocoService } from './core/services/foco.service';
 import { ComemoracaoService } from './core/services/comemoracao.service';
 import { TemaService } from './core/services/tema.service';
 import { AtualizacaoService } from './core/services/atualizacao.service';
+import { NavegacaoService } from './core/services/navegacao.service';
 import { ConfeteComponent } from './shared/confete.component';
 import { IconeComponent, NomeIcone } from './shared/icone.component';
 import { MarcaComponent } from './shared/marca.component';
@@ -65,7 +66,12 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
 
       <!-- Barra superior (celular) -->
       <header class="topo-movel">
-        <a routerLink="/" aria-label="Trilha, início"><app-marca [completa]="false" /></a>
+        <div class="topo-inicio">
+          @if (navegacao.podeVoltar()) {
+            <button class="btn-icone voltar-movel" type="button" (click)="navegacao.voltar()" aria-label="Voltar"><app-icone nome="voltar" [tamanho]="20" /></button>
+          }
+          <a routerLink="/" aria-label="Trilha, início"><app-marca [completa]="false" /></a>
+        </div>
         <div class="topo-acoes">
           @if (foco.rodando()) {
             <a routerLink="/foco" class="pilula-foco"><span class="ao-vivo"></span><span class="num">{{ foco.tempo() }}</span></a>
@@ -76,6 +82,11 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
     }
 
     <main id="conteudo" class="conteudo" [class.solta]="!comShell()">
+      @if (comShell() && navegacao.podeVoltar()) {
+        <div class="voltar-barra">
+          <button class="voltar" type="button" (click)="navegacao.voltar()"><app-icone nome="voltar" [tamanho]="16" /> Voltar</button>
+        </div>
+      }
       <router-outlet />
     </main>
 
@@ -168,6 +179,15 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
 
     .topo-movel, .nav-movel { display: none; }
 
+    /* ----- Voltar ----- */
+    .voltar-barra { margin-bottom: 14px; }
+    .voltar {
+      display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px 0 8px; margin-left: -8px;
+      border: 0; border-radius: var(--r-2); background: none; color: var(--texto-2); font-size: .88rem; font-weight: 500; cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .voltar:hover { background: var(--superficie); color: var(--texto); }
+
     /* ----- Tablet: lateral só com ícones ----- */
     @media (max-width: 1099px) {
       :host { --sidebar: 76px; }
@@ -192,7 +212,10 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
         background: color-mix(in srgb, var(--fundo) 88%, transparent); backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--borda);
       }
-      .topo-acoes { display: flex; align-items: center; gap: 10px; }
+      .topo-acoes, .topo-inicio { display: flex; align-items: center; gap: 10px; }
+      .topo-inicio { gap: 4px; }
+      .voltar-movel { width: 40px; height: 40px; margin-left: -10px; border: 0; }
+      .voltar-barra { display: none; }
       .pilula-foco { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--pilula); background: var(--acento-suave); color: var(--acento); font-size: .9rem; }
       .conteudo { margin-left: 0; padding: 20px 16px calc(var(--nav-movel) + 32px + env(safe-area-inset-bottom)); }
       .nav-movel {
@@ -242,6 +265,8 @@ export class AppComponent {
   // Procura versões novas do app instalado e mostra o aviso "Atualizar".
   protected atualizacao = inject(AtualizacaoService);
   protected atualizacaoDispensada = signal(false);
+  // Botão "Voltar" (no topo no celular e acima do conteúdo no computador).
+  protected navegacao = inject(NavegacaoService);
 
   protected menu: ItemMenu[] = [
     { rota: '/', rotulo: 'Painel', icone: 'painel' },

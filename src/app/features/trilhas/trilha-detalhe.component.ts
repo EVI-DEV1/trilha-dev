@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NovaTrilha, progressoDe, proximoModulo, rotuloCategoria } from '../../core/models/trilha.model';
+import { MAX_MODULOS, NovaTrilha, progressoDe, proximoModulo, rotuloCategoria } from '../../core/models/trilha.model';
 import { AvisoService } from '../../core/services/aviso.service';
 import { FocoService } from '../../core/services/foco.service';
 import { TrilhasService } from '../../core/services/trilhas.service';
@@ -80,10 +80,14 @@ import { formatarMinutos } from '../../shared/formatos';
             }
           </ol>
 
-          <form class="novo" (submit)="adicionar($event, t.id, campo)">
-            <input #campo class="campo" placeholder="Nome do novo módulo" aria-label="Nome do novo módulo" maxlength="120" />
-            <button class="btn btn-secundario" type="submit"><app-icone nome="mais" [tamanho]="16" /> Adicionar</button>
-          </form>
+          @if (t.modulos.length < maxModulos) {
+            <form class="novo" (submit)="adicionar($event, t.id, campo)">
+              <input #campo class="campo" placeholder="Nome do novo módulo" aria-label="Nome do novo módulo" maxlength="120" />
+              <button class="btn btn-secundario" type="submit"><app-icone nome="mais" [tamanho]="16" /> Adicionar</button>
+            </form>
+          } @else {
+            <p class="limite campo-dica">Esta trilha chegou ao limite de {{ maxModulos }} módulos. Para continuar, crie uma segunda trilha (ex.: “{{ t.titulo }} · parte 2”).</p>
+          }
         </section>
 
         <aside class="pilha">
@@ -164,6 +168,7 @@ import { formatarMinutos } from '../../shared/formatos';
     .nota-area { display: grid; gap: 6px; padding: 0 0 14px 44px; }
     .vazio p { color: var(--texto-suave); }
 
+    .limite { margin-top: 14px; padding-top: 16px; border-top: 1px solid var(--borda); }
     .novo { display: flex; gap: 8px; margin-top: 14px; padding-top: 16px; border-top: 1px solid var(--borda); }
 
     .resumo { display: grid; justify-items: center; gap: 20px; }
@@ -204,6 +209,7 @@ export class TrilhaDetalheComponent {
   protected salvando = signal(false);
   protected confirmando = signal(false);
   protected notaAberta = signal<number | null>(null);
+  protected maxModulos = MAX_MODULOS;
   protected categoria = rotuloCategoria;
   protected formatar = formatarMinutos;
 

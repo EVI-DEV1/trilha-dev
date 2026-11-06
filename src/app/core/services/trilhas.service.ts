@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, concat, finalize, tap, toArray } from 'rxjs';
-import { Modulo, NovaTrilha, Trilha, progressoDe } from '../models/trilha.model';
+import { MAX_MODULOS, Modulo, NovaTrilha, Trilha, progressoDe } from '../models/trilha.model';
 import { ComemoracaoService } from './comemoracao.service';
 import { REPOSITORIO_TRILHAS } from '../data/repositorio-trilhas';
 
@@ -57,6 +57,7 @@ export class TrilhasService {
   }
 
   adicionarModulo(trilhaId: number, titulo: string): void {
+    if ((this.porId(trilhaId)?.modulos.length ?? 0) >= MAX_MODULOS) return;
     this.alterarModulos(trilhaId, (modulos) => [
       ...modulos,
       { id: Math.max(0, ...modulos.map((m) => m.id)) + 1, titulo, concluido: false },

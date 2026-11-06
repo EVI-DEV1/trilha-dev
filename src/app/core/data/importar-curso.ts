@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { MODO_NUVEM, supabase } from './supabase';
+import { MAX_MODULOS } from '../models/trilha.model';
 
 export interface CursoImportado {
   titulo: string;
   plataforma: string;
   modulos: string[];
   fonte: string;
+  /** Quantos módulos a página tinha, quando passou do limite e a lista foi cortada. */
+  total?: number;
 }
 
 /** Busca título e módulos a partir do link de um curso (Edge Function "importar-curso"). */
@@ -29,7 +32,13 @@ export class ImportarCursoService {
       throw new Error(msg);
     }
     const r = data as CursoImportado;
-    if (r?.modulos) r.modulos = tirarRepeticoes(r.modulos);
+    if (r?.modulos) {
+      r.modulos = tirarRepeticoes(r.modulos);
+      if (r.modulos.length > MAX_MODULOS) {
+        r.total = Math.max(r.total ?? 0, r.modulos.length);
+        r.modulos = r.modulos.slice(0, MAX_MODULOS);
+      }
+    }
     if (!r?.modulos?.length) throw new Error('Não encontramos módulos nessa página. Copie a lista de aulas do curso e cole no campo de módulos.');
     return r;
   }
@@ -62,7 +71,8 @@ export function separarModulos(texto: string): string[] {
     vistos.add(chave);
     saida.push(l);
   }
-  return saida.slice(0, 120);
+  // Sem corte aqui: o formulário mostra "N de MAX" e avisa quando passa do limite.
+  return saida;
 }
 
 /**

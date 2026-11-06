@@ -42,6 +42,8 @@ import { MascoteComponent } from './mascote.component';
     .rodape { position: relative; z-index: 1; color: #8794b0; }
         .lado { display: grid; place-items: center; padding: clamp(24px, 5vw, 64px) 20px; }
     .miolo { width: min(420px, 100%); }
+    /* <app-tela-dividida topo>: conteúdo preso no alto (não pula quando o formulário muda de tamanho). */
+    :host([topo]) .lado { place-items: start center; padding-top: clamp(40px, 14vh, 140px); }
     @media (max-width: 899px) {
       :host { grid-template-columns: 1fr; }
       /* iPhone: o topo fica abaixo da barra de hora/bateria (área segura) */
@@ -50,7 +52,7 @@ import { MascoteComponent } from './mascote.component';
       .bento { width: 92px; right: 16px; bottom: auto; top: calc(10px + env(safe-area-inset-top)); }
       .bento ::ng-deep svg { width: 92px; height: auto; }
       .frase { font-size: 2rem; }
-      .lado { place-items: start center; padding-top: 28px; }
+      .lado, :host([topo]) .lado { place-items: start center; padding-top: 28px; }
     }
   `,
 })
