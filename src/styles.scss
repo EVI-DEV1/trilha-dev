@@ -235,7 +235,7 @@ select.campo { appearance: none; background-image: linear-gradient(45deg, transp
 .etiqueta.sucesso { background: var(--sucesso-suave); color: var(--sucesso); border-color: transparent; }
 
 .segmentos { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--borda); border-radius: var(--r-2); background: var(--fundo-2); }
-.segmentos button { border: 0; background: transparent; padding: 6px 12px; border-radius: 7px; font-size: .82rem; font-weight: 600; color: var(--texto-suave); cursor: pointer; }
+.segmentos button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.2; border: 0; background: transparent; padding: 6px 12px; border-radius: 7px; font-size: .82rem; font-weight: 600; color: var(--texto-suave); cursor: pointer; }
 .segmentos button.ativo { background: var(--superficie-3); color: var(--texto); }
 
 /* ---------- Progresso ---------- */

@@ -202,7 +202,7 @@ export class TrilhasComponent implements OnInit {
 
   fechar(): void {
     this.folhaAberta.set(false);
-    if (this.nova()) this.router.navigate([], { queryParams: {} });
+    if (this.nova()) this.router.navigate([], { queryParams: {}, replaceUrl: true });
   }
 
   criar(dados: NovaTrilha): void {

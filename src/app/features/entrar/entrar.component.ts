@@ -3,15 +3,25 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { TelaDivididaComponent } from '../../shared/tela-dividida.component';
+import { IconeComponent } from '../../shared/icone.component';
 
 type Modo = 'entrar' | 'criar' | 'recuperar';
 
 @Component({
   selector: 'app-entrar',
-  imports: [ReactiveFormsModule, TelaDivididaComponent],
+  imports: [ReactiveFormsModule, TelaDivididaComponent, IconeComponent],
   template: `
-    <app-tela-dividida>
-      <p class="rotulo-mono acento">{{ modo() === 'criar' ? 'Criar conta' : modo() === 'recuperar' ? 'Recuperar acesso' : 'Entrar' }}</p>
+    <!-- "topo": o conteúdo fica preso no alto, então as abas não mudam de lugar ao trocar Entrar ↔ Criar conta. -->
+    <app-tela-dividida topo>
+      @if (modo() === 'recuperar') {
+        <button type="button" class="voltar-link" (click)="trocar('entrar')"><app-icone nome="voltar" [tamanho]="16" /> Voltar para entrar</button>
+      } @else {
+        <div class="segmentos largura" role="tablist" aria-label="Entrar ou criar conta">
+          <button type="button" role="tab" [class.ativo]="modo() === 'entrar'" [attr.aria-selected]="modo() === 'entrar'" (click)="trocar('entrar')">Entrar</button>
+          <button type="button" role="tab" [class.ativo]="modo() === 'criar'" [attr.aria-selected]="modo() === 'criar'" (click)="trocar('criar')">Criar conta</button>
+        </div>
+      }
+
       <h1>
         @switch (modo()) {
           @case ('criar') { Comece sua <em>trilha</em>. }
@@ -27,13 +37,6 @@ type Modo = 'entrar' | 'criar' | 'recuperar';
         }
       </p>
 
-      @if (modo() !== 'recuperar') {
-        <div class="segmentos largura" role="tablist">
-          <button type="button" role="tab" [class.ativo]="modo() === 'entrar'" [attr.aria-selected]="modo() === 'entrar'" (click)="trocar('entrar')">Entrar</button>
-          <button type="button" role="tab" [class.ativo]="modo() === 'criar'" [attr.aria-selected]="modo() === 'criar'" (click)="trocar('criar')">Criar conta</button>
-        </div>
-      }
-
       <form [formGroup]="form" (ngSubmit)="enviar()" class="form" novalidate>
         @if (modo() === 'criar') {
           <label class="campo-grupo"><span>Nome</span>
@@ -44,13 +47,15 @@ type Modo = 'entrar' | 'criar' | 'recuperar';
           <input class="campo" type="email" formControlName="email" autocomplete="email" placeholder="voce@email.com" />
         </label>
         @if (modo() !== 'recuperar') {
-          <label class="campo-grupo">
-            <span class="linha-rotulo">Senha
-              @if (modo() === 'entrar') { <button type="button" class="link-pequeno" (click)="trocar('recuperar')">Esqueci minha senha</button> }
-            </span>
-            <input class="campo" type="password" formControlName="senha" placeholder="Mínimo de 6 caracteres"
-              [attr.autocomplete]="modo() === 'entrar' ? 'current-password' : 'new-password'" />
-          </label>
+          <div class="campo-grupo">
+            <label class="campo-grupo"><span>Senha</span>
+              <input class="campo" type="password" formControlName="senha" placeholder="Mínimo de 6 caracteres"
+                [attr.autocomplete]="modo() === 'entrar' ? 'current-password' : 'new-password'" />
+            </label>
+            @if (modo() === 'entrar') {
+              <button type="button" class="link-pequeno esqueci" (click)="trocar('recuperar')">Esqueci minha senha</button>
+            }
+          </div>
         }
 
         @if (erro()) { <p class="msg erro" role="alert">{{ erro() }}</p> }
@@ -61,21 +66,20 @@ type Modo = 'entrar' | 'criar' | 'recuperar';
             @switch (modo()) { @case ('criar') { Criar conta } @case ('recuperar') { Enviar link } @default { Entrar } }
           }
         </button>
-
-        @if (modo() === 'recuperar') {
-          <button type="button" class="btn btn-fantasma btn-bloco" (click)="trocar('entrar')">Voltar para entrar</button>
-        }
       </form>
     </app-tela-dividida>
   `,
   styles: `
-    h1 { font-size: clamp(2rem, 3.6vw, 2.6rem); margin: 10px 0; }
+    h1 { font-size: clamp(2rem, 3.6vw, 2.6rem); margin: 0 0 10px; }
     .sub { margin-bottom: 26px; }
-    .largura { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin-bottom: 20px; }
+    .largura { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin-bottom: 28px; }
+    .largura button { min-height: 40px; }
+    .voltar-link { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; margin-bottom: 28px; padding: 0; border: 0; background: none; color: var(--texto-2); font-weight: 500; cursor: pointer; }
+    .voltar-link:hover { color: var(--acento); }
     .form { display: grid; gap: 16px; }
-    .linha-rotulo { display: flex; justify-content: space-between; align-items: baseline; }
     .link-pequeno { border: 0; background: none; padding: 0; color: var(--acento); font-size: .8rem; font-weight: 500; cursor: pointer; }
     .link-pequeno:hover { text-decoration: underline; }
+    .esqueci { justify-self: end; min-height: 28px; }
     .msg { font-size: .86rem; padding: 10px 14px; border-radius: var(--r-2); }
     .erro { background: var(--erro-suave); color: var(--erro); }
     .info { background: var(--acento-suave); color: var(--texto); }

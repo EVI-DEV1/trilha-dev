@@ -12,9 +12,10 @@ const NAVEGADOR = {
   'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
 };
 const LIMITE_BYTES = 4_000_000;
-const MAX_MODULOS = 80;
+// Mesmo limite do app (MAX_MODULOS em src/app/core/models/trilha.model.ts).
+const MAX_MODULOS = 200;
 
-type Resultado = { titulo: string; plataforma: string; modulos: string[]; fonte: string };
+type Resultado = { titulo: string; plataforma: string; modulos: string[]; fonte: string; total?: number };
 
 function resposta(corpo: unknown, status = 200) {
   return new Response(JSON.stringify(corpo), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
@@ -54,7 +55,7 @@ function textoLimpo(html: string): string {
     .trim();
 }
 
-function unicos(lista: string[]): string[] {
+function unicos(lista: string[], max = MAX_MODULOS): string[] {
   const vistos = new Set<string>();
   const saida: string[] = [];
   for (const bruto of lista) {
@@ -64,7 +65,7 @@ function unicos(lista: string[]): string[] {
     vistos.add(chave);
     saida.push(t);
   }
-  return saida.slice(0, MAX_MODULOS);
+  return saida.slice(0, max);
 }
 
 function nomePlataforma(host: string): string {
@@ -94,6 +95,17 @@ function coletar(obj: unknown, chave: string, saida: unknown[] = []): unknown[] 
 function textoYt(t: any): string {
   return t?.simpleText ?? (t?.runs ?? []).map((r: any) => r.text).join('') ?? '';
 }
+function titulosYt(videos: any[]): string[] {
+  return videos.map((v) => textoYt(v?.title) || v?.metadata?.lockupMetadataViewModel?.title?.content || '').filter(Boolean);
+}
+function proximaPagina(obj: unknown): string | undefined {
+  return (coletar(obj, 'continuationCommand') as any[]).map((c) => c?.token).find(Boolean);
+}
+
+/**
+ * A página da playlist traz só os ~100 primeiros vídeos; o resto vem em "páginas" seguintes
+ * (continuation). Seguimos essas páginas até o limite de módulos do app.
+ */
 async function youtube(u: URL): Promise<Resultado | null> {
   const lista = u.searchParams.get('list');
   if (!lista) return null;
@@ -101,11 +113,37 @@ async function youtube(u: URL): Promise<Resultado | null> {
   const m = html.match(/ytInitialData\s*=\s*(\{.+?\});\s*<\/script>/s);
   if (!m) return null;
   const dados = JSON.parse(m[1]);
-  const videos = [...coletar(dados, 'playlistVideoRenderer'), ...coletar(dados, 'lockupViewModel')] as any[];
-  const titulos = videos.map((v) => textoYt(v?.title) || v?.metadata?.lockupMetadataViewModel?.title?.content || '').filter(Boolean);
+  const titulos = titulosYt([...coletar(dados, 'playlistVideoRenderer'), ...coletar(dados, 'lockupViewModel')] as any[]);
+
+  const versao = html.match(/"INNERTUBE_CLIENT_VERSION":"([^"]+)"/)?.[1] ?? '2.20241101.00.00';
+  let token = proximaPagina(dados);
+  for (let pagina = 0; token && titulos.length < MAX_MODULOS + 1 && pagina < 5; pagina++) {
+    try {
+      const r = await fetch('https://www.youtube.com/youtubei/v1/browse?prettyPrint=false', {
+        method: 'POST',
+        headers: { ...NAVEGADOR, 'Content-Type': 'application/json', Cookie: 'CONSENT=YES+1' },
+        body: JSON.stringify({ context: { client: { clientName: 'WEB', clientVersion: versao, hl: 'pt' } }, continuation: token }),
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) break;
+      const mais = await r.json();
+      titulos.push(...titulosYt([...coletar(mais, 'playlistVideoRenderer'), ...coletar(mais, 'lockupViewModel')] as any[]));
+      token = proximaPagina(mais);
+    } catch {
+      break; // fica com o que já foi lido
+    }
+  }
+
   const meta = (coletar(dados, 'playlistMetadataRenderer')[0] ?? {}) as any;
   const titulo = meta.title ?? textoYt((coletar(dados, 'playlistHeaderRenderer')[0] as any)?.title) ?? 'Playlist do YouTube';
-  return { titulo, plataforma: 'YouTube', modulos: unicos(titulos), fonte: 'youtube' };
+  // Quantidade de vídeos informada pelo YouTube (ex.: "312 vídeos"), para avisar quando a lista foi cortada.
+  const qtd = Number(String(html.match(/"(?:numVideosText|stats)":\{"runs":\[\{"text":"([\d.,]+)"/)?.[1] ?? '').replace(/\D/g, ''));
+  const todos = unicos(titulos, Infinity);
+  const cortada = todos.length > MAX_MODULOS || qtd > MAX_MODULOS;
+  return {
+    titulo, plataforma: 'YouTube', modulos: todos.slice(0, MAX_MODULOS), fonte: 'youtube',
+    ...(cortada ? { total: Math.max(qtd || 0, todos.length) } : {}),
+  };
 }
 
 // ---------- Udemy (currículo público) ----------

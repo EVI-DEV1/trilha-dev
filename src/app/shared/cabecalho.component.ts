@@ -23,6 +23,8 @@ import { Component, input } from '@angular/core';
     .texto { display: grid; gap: 10px; min-width: 0; max-width: 720px; }
     :host ::ng-deep .texto > p:not(.rotulo-mono) { color: var(--texto-suave); max-width: 560px; font-size: 1rem; }
     .acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+    /* As páginas passam os botões dentro de <div acoes>: o espaçamento vale para os filhos dele. */
+    :host ::ng-deep .acoes > [acoes] { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
     .acoes:empty { display: none; }
   `,
 })
