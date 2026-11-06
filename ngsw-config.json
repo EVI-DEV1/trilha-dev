@@ -30,5 +30,6 @@
       "urls": ["https://brasilapi.com.br/api/feriados/**"],
       "cacheConfig": { "strategy": "performance", "maxSize": 3, "maxAge": "7d" }
     }
-  ]
+  ],
+  "appData": { "numero": "1.2.0", "data": "2026-11-06", "commit": "" }
 }

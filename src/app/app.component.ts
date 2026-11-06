@@ -109,7 +109,10 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
 
     @if (atualizacao.disponivel() && !atualizacaoDispensada()) {
       <div class="atualizacao" role="status">
-        <span><strong>Nova versão do Trilha</strong> pronta para usar.</span>
+        <span>
+          <strong>Trilha {{ atualizacao.nova()?.numero ?? 'nova versão' }}</strong> pronto para usar
+          <span class="versao-atual">· você está na {{ atualizacao.atual.numero }}</span>
+        </span>
         <button class="btn btn-primario btn-sm" type="button" (click)="atualizacao.atualizar()">Atualizar</button>
         <button class="btn-icone fechar-atualizacao" type="button" aria-label="Depois" (click)="atualizacaoDispensada.set(true)"><app-icone nome="fechar" [tamanho]="15" /></button>
       </div>
@@ -250,6 +253,8 @@ const TELAS_SOLTAS = /^\/(entrar|boas-vindas|redefinir-senha|baixar)/;
       font-size: .88rem; animation: entra .3s var(--ease);
     }
     .atualizacao strong { font-weight: 600; }
+    .versao-atual { color: var(--texto-suave); }
+    @media (max-width: 420px) { .versao-atual { display: none; } }
     .fechar-atualizacao { width: 32px; height: 32px; border: 0; }
   `,
 })
